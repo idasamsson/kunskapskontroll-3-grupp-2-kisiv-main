@@ -22,7 +22,13 @@ public class Deck
 
     public Card Draw()
     {
-        throw new NotImplementedException();
+        if (cards.Count == 0)
+        {
+            Reset();
+        }
+        Card card = cards[^1];
+        cards.RemoveAt(cards.Count - 1);
+        return card;
     }
 
     public void Reset()

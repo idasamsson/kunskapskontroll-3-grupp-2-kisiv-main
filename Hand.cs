@@ -6,9 +6,29 @@ class Hand
     {
     }
 
-    public int GetValue()
+    public int GetHandValue(List<int> cards)
     {
-        throw new NotImplementedException();
+        int Total = 0;
+        int Ace = 0;
+
+        foreach (int card in cards)
+        {
+            if (card == 1)
+            {
+                Ace++; 
+                Total += 11;
+            }
+            else
+            {
+                Total += card;
+            }
+        }   
+        while (Total > 21 && Ace > 0)
+            {
+                Total -= 10;
+                Ace--;
+            }
+        return Total; 
     }
 
     public bool IsBlackjack()
