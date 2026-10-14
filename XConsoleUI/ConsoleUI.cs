@@ -1,3 +1,5 @@
+using XConsoleUI;
+
 class ConsoleUI
 {
     public int ShowStartMenu()
