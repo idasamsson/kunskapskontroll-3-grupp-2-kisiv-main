@@ -1,9 +1,12 @@
 class Hand
 {
-    private List<Card> cards;
+    private List<Card> cards = new List<Card>();
+    public IReadOnlyList<Card> Cards => cards;
 
-    public void AddCard(Card c)
+
+    public void AddCard(Card card)
     {
+        cards.Add(card);
     }
 
     public int GetHandValue(List<int> cards)
