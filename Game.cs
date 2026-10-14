@@ -6,6 +6,7 @@ class Game
     private Deck deck;
     private Dealer dealer;
     private List<Player> players;
+    private List<Player> knownPlayers;
     private ConsoleUI ui;
     private GameStorage storage;
 
@@ -14,12 +15,14 @@ class Game
         deck = new Deck(random);
         dealer = new Dealer();
         players = new List<Player>();
+        knownPlayers = new List<Player>();
         ui = new ConsoleUI();
         storage = new GameStorage();
     }
 
     public void Run()
     {
+        knownPlayers = storage.LoadPlayers();
         bool running = true;
 
         while (running)
@@ -36,7 +39,7 @@ class Game
                 ui.ShowRules();
                 break;
             case 3:
-                ui.ShowResults(players);
+                ui.ShowResults(knownPlayers);
                 break;
             case 4:
                 running = false;
@@ -51,6 +54,15 @@ class Game
 
     private void AddPlayer(string name)
     {
+        Player? player = knownPlayers.Find(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+        if (player == null)
+        {
+            player = new Player { Name = name };
+            knownPlayers.Add(player);
+        }
+
+        players.Add(player);
     }
 
     private void GameLoop()
