@@ -1,7 +1,7 @@
 abstract class Participant
 {
     public string Name;
-    protected Hand Hand;
+    public Hand Hand;
 
     public abstract Move MakeMove();
 

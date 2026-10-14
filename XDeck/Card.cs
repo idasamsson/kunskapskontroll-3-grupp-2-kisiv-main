@@ -42,3 +42,4 @@ public class Card
         return $"{suit} {rank}";
     }
 }
+
