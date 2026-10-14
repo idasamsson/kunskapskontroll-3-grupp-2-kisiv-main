@@ -20,7 +20,8 @@ public class Deck
         }
     }
 
-    public Card Draw()
+
+   /* public Card Draw()
     {
         if (cards.Count == 0)
         {
@@ -30,7 +31,7 @@ public class Deck
         cards.RemoveAt(cards.Count - 1);
         return card;
     }
-
+*/
     public void Reset()
     {
     }
