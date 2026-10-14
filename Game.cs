@@ -1,10 +1,22 @@
 class Game
 {
+    private const int MaxPlayers = 5;
+
+    private readonly Random random = new Random();
     private Deck deck;
     private Dealer dealer;
     private List<Player> players;
     private ConsoleUI ui;
     private GameStorage storage;
+
+    public Game()
+    {
+        deck = new Deck(random);
+        dealer = new Dealer();
+        players = new List<Player>();
+        ui = new ConsoleUI();
+        storage = new GameStorage();
+    }
 
     public void Run()
     {
