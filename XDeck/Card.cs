@@ -5,7 +5,13 @@ class Card
 
     public int GetValue()
     {
-        throw new NotImplementedException();
+        string card = rank switch
+{
+    10 => "Kneckt",
+    10 => "Drottning",
+    10 => "Kung",
+    _ => "vardag"     
+};
     }
 
     public override string ToString()
