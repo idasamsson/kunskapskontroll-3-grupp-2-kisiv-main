@@ -25,7 +25,6 @@ classDiagram
         -ConsoleUI ui
         -GameStorage storage
         +Run() void
-        -ShowStartMenu() void
         -NewGame() void
         -AddPlayer(string name) void
         -GameLoop() void

@@ -20,10 +20,29 @@ class Game
 
     public void Run()
     {
-    }
+        bool running = true;
 
-    private void ShowStartMenu()
-    {
+        while (running)
+        {
+            int choice = ui.ShowStartMenu();
+
+            switch (choice)
+            {
+            case 1:
+                NewGame();
+                GameLoop();
+                break;
+            case 2:
+                ui.ShowRules();
+                break;
+            case 3:
+                ui.ShowResults(players);
+                break;
+            case 4:
+                running = false;
+                break;
+            }
+        }
     }
 
     private void NewGame()
