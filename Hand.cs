@@ -41,5 +41,6 @@ class Hand
 
     public void Clear()
     {
+        cards.Clear();
     }
 }
