@@ -1,9 +1,7 @@
-using System.Security.Cryptography.X509Certificates;
-
 public class Card
 {
-    public Rank Rank;
-    public Suit Suit;
+    public Rank Rank;  
+    public Suit Suit; 
     public Card(Rank rank, Suit suit)
     {
         Rank = rank;
