@@ -1,6 +1,6 @@
 class Deck
 {
-    private List<Card> cards = [];
+    private List<Card> cards = new();
     private readonly Random random;
 
     // Samma Random skickas in från Game, så att alla delar samma insats
