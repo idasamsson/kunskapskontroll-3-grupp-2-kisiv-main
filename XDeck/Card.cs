@@ -1,6 +1,6 @@
 using System.Security.Cryptography.X509Certificates;
 
-class Card
+public class Card
 {
     public Rank Rank;
     public Suit Suit;
