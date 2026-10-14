@@ -1,4 +1,4 @@
-public class Deck
+class Deck
 {
     private List<Card> cards;
     private readonly Random random;
