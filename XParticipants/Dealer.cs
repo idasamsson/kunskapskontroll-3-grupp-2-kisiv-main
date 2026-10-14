@@ -26,10 +26,28 @@ class Dealer : Participant
         }
         return Move.Stand;
     }
-    // Gör givaren redo för en ny runda, tom hand och dolt hålkort.
-    public void StartNewRound()
+
+// Givarens hela tur, vänder hålkortet och drar kort
+// tills regeln säger stanna. Givaren spelar alltid färdigt.
+// Returnerar korten som drogs.
+public List<Card> PlayTurn(Deck deck)
+{
+    RevealHoleCard();
+
+    List<Card> drawnCards = new List<Card>();
+    while (MakeMove() == Move.Hit)
     {
-        Hand.Clear();
-        IsHoleCardRevealed = false;
+        Card card = deck.Draw();
+        Hand.AddCard(card);
+        drawnCards.Add(card);
     }
+    return drawnCards;
+}
+
+// Ny runda. Tom hand och dolt hålkort.
+public void StartNewRound()
+   {
+    Hand.Clear();
+    IsHoleCardRevealed = false;
+   }
 }
