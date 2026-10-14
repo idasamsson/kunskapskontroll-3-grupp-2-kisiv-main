@@ -1,5 +1,8 @@
 class Dealer : Participant
 {
+    // Givaren stannar på 17 eller mer, även mjuk 17
+    private const int StandValue = 17;
+
     // Hålkortet är givarens andra kort, ligger dolt tills alla spelare är klara.
     public bool IsHoleCardRevealed { get; private set; }
 
@@ -13,9 +16,20 @@ class Dealer : Participant
     {
         IsHoleCardRevealed = true;
     }
-    // Köper på 16 eller lägre, stannar på 17
+    // Köper på 16 eller lägre, stannar på 17.
+    // Givaren väljer aldirg, draget räknas ut från regeln.
     public override Move MakeMove()
     {
-        throw new NotImplementedException();
+        if (HandGetValue() < StandValue)
+        {
+            return Move.Hit;
+        }
+        return Move.Stand;
+    }
+    // Gör givaren redo för en ny runda, tom hand och dolt hålkort.
+    public void StartNewRound()
+    {
+        Hand.Clear();
+        IsHoleCardRevealed = false;
     }
 }
