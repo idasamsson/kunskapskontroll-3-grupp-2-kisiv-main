@@ -1,5 +1,5 @@
 // Rank = valör
-enum Rank 
+public enum Rank 
 {
     Two = 2,
     Three = 3,
