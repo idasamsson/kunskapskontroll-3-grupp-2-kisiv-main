@@ -1,5 +1,5 @@
 // Rank = valör
-enum Rank
+enum Rank 
 {
     Two = 2,
     Three = 3,
@@ -13,5 +13,5 @@ enum Rank
     Jack = 11, // Ändrar värdet för Knekt, drottning o kung från 10 till egna värden
     Queen = 12, //då c# inte klarar av att se skillnaden mellan korten om de har samma värde. 
     King = 13,
-    Ace = 11,
+    Ace = 14,
 }

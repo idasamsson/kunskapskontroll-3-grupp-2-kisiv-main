@@ -1,3 +1,5 @@
+using System.Security.Cryptography.X509Certificates;
+
 class Card
 {
     public Rank Rank;
@@ -5,13 +7,7 @@ class Card
 
     public int GetValue()
     {
-        string card = rank switch
-{
-    10 => "Kneckt",
-    10 => "Drottning",
-    10 => "Kung",
-    _ => "vardag"     
-};
+       
     }
 
     public override string ToString()
