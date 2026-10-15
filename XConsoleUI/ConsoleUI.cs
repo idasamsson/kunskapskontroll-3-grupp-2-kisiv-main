@@ -12,6 +12,15 @@ class ConsoleUI
         return ConsoleInput.ReadInt("Välj ett alternativ (1-4): ", 1, 4);
     }
 
+    public int AskPlayerCount()
+    {
+        return ConsoleInput.ReadInt("Hur många spelare (1-5)? ", 1, 5);
+    }
+
+    public void ShowMessage(string text)
+    {
+    Console.WriteLine(text);
+    }
     public void ShowRules()
     {
     }
