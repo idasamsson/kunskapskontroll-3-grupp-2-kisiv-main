@@ -19,7 +19,7 @@ class Dealer : Participant
     // Givaren väljer aldirg, draget räknas ut från regeln.
     public override Move MakeMove()
     {
-        if (HandGetValue() < StandValue)
+        if (Hand.GetHandValue() < StandValue)
         {
             return Move.Hit;
         }
