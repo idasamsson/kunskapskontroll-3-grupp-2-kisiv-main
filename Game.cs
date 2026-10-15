@@ -121,7 +121,7 @@ class Game
         ui.ShowHand(dealer);
         ui.ShowHand(player);
 
-        while (!player.IsBust() && player.Hand.GetHandValue() < 21 && ui.AskMove() == Move.Hit)
+        while (!player.Hand.IsBust() && player.Hand.GetHandValue() < 21 && ui.AskMove() == Move.Hit)
         {
             player.Hand.AddCard(deck.Draw());
             ui.ShowHand(player);
@@ -154,7 +154,7 @@ class Game
 
     private Outcome DetermineOutcome(Player player)
     {
-        if (player.IsBust())
+        if (player.Hand.IsBust())
         {
             return Outcome.Lose;
         }
@@ -175,7 +175,7 @@ class Game
             return Outcome.Lose;
         }
 
-        if (dealer.IsBust())
+        if (dealer.Hand.IsBust())
         {
             return Outcome.Win;
         }
