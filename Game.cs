@@ -1,7 +1,7 @@
 class Game
 {
     private const int MaxPlayers = 5;
-
+    private const int InitialCardCount = 2;
     private readonly Random random = new Random();
     private Deck deck;
     private Dealer dealer;
@@ -71,6 +71,26 @@ class Game
 
     private void PlayRound()
     {
+        deck.ResetIfLow();
+        DealInitialCards();
+    }
+
+    private void DealInitialCards()
+    {
+        foreach (Player player in players)
+        {
+            player.Hand.Clear();
+        }
+        dealer.Hand.Clear();
+
+        for (int i = 0; i < InitialCardCount; i++);
+        {
+            foreach (Player player in players)
+            {
+                player.Hand.AddCard(deck.Draw());
+            }
+            dealer.Hand.AddCard(deck.Draw());
+        }
     }
 
     private Outcome DetermineOutcome(Player p)
