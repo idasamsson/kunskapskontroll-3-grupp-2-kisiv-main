@@ -9,7 +9,6 @@ class Dealer : Participant
     public Dealer()
     {
         Name = "Givaren";
-        Hand = new Hand();
     }
     // Vänder hålkortet. Anropas när alla spelare är klara.
     public void RevealHoleCard()
