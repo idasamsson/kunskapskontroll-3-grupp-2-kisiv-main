@@ -50,6 +50,11 @@ class Hand
         return GetHandValue() == 21 && cards.Count == 2;
     }
 
+    public bool IsBust()
+    {
+        return GetHandValue() > 21;
+    }
+
     public void Clear()
     {
         cards.Clear();
