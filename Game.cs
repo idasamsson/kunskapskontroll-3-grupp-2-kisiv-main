@@ -2,7 +2,7 @@ class Game
 {
     private const int MaxPlayers = 5;
     private const int InitialCardCount = 2;
-    private readonly Random random = new Random();
+    private readonly Random random;
     private Deck deck;
     private Dealer dealer;
     private List<Player> players;
@@ -10,16 +10,17 @@ class Game
     private ConsoleUI ui;
     private GameStorage storage;
 
-    public Game()
+    public Game(Random random, ConsoleUI ui, GameStorage storage)
     {
+        this.random = random;
+        this.ui = ui;
+        this.storage = storage;
         deck = new Deck(random);
         dealer = new Dealer();
         players = new List<Player>();
         knownPlayers = new List<Player>();
-        ui = new ConsoleUI();
-        storage = new GameStorage();
     }
-
+    
     public void Run()
     {
         knownPlayers = storage.LoadPlayers();
