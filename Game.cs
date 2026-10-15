@@ -43,6 +43,7 @@ class Game
                 ui.ShowResults(knownPlayers);
                 break;
             case 4:
+                SaveResults();
                 running = false;
                 break;
             }
@@ -73,6 +74,22 @@ class Game
         }
 
         players.Add(player);
+    }
+
+    private void SaveResults()
+    {
+        try
+        {
+            storage.SavePlayers(knownPlayers);
+        }
+        catch (IOException)
+        {
+            ui.ShowMessage("Kunde inte spara resultaten.");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            ui.ShowMessage("Saknar behörighet att spara resultaten");
+        }
     }
 
     private void GameLoop()
