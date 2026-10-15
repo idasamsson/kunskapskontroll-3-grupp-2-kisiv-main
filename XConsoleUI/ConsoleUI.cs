@@ -19,7 +19,7 @@ class ConsoleUI
 
     public void ShowMessage(string text)
     {
-    Console.WriteLine(text);
+        Console.WriteLine(text);
     }
     public void ShowRules()
     {
