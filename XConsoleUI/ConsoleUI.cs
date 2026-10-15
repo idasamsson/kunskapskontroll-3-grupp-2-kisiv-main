@@ -37,7 +37,7 @@ class ConsoleUI
             
             if (name.Length == 0 )
             {
-                Console.WriteLine(""Namnet får inte vara tomt.");  
+                Console.WriteLine("Namnet får inte vara tomt.");  
                 continue;
             }
 
