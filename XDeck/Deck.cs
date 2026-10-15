@@ -1,10 +1,9 @@
-class Deck
+class Deck // En kortlek med 52 kort som kan blandas och dras ifrån.
 {
     private List<Card> cards = new();
     private readonly Random random;
 
-    // Samma Random skickas in från Game, så att alla delar samma insats
-    public Deck(Random random)
+    public Deck(Random random) // Samma Random skickas in från Game, så att alla delar samma slumpgenerator
     {
         this.random = random;
         Reset();
@@ -15,7 +14,7 @@ class Deck
     {
          for (int i = cards.Count - 1; i > 0; i--)
         {
-            int j = random.Next(i + 1); 
+            int j = random.Next(i + 1);
             (cards[i], cards[j]) = (cards[j], cards[i]);
         }
     }
@@ -44,16 +43,16 @@ class Deck
             }
         }
 
-         Shuffle();
+        Shuffle();
     }
    
     public int Count()
     {
         return cards.Count;
     }
-    // Ny blandad lek när färre än 15 kort är kvar.
-// Anropas från Game i början av varje runda.
-public void ResetIfLow()
+    
+    public void ResetIfLow() // Ny blandad lek när färre än 15 kort är kvar.
+                            // Anropas från Game i början av varje runda.
     {
         if (cards.Count < 15)
         {
