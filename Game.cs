@@ -102,6 +102,18 @@ class Game
         DealInitialCards();
     }
 
+    private void PlayPlayerTurn(Player player)
+    {
+        ui.ShowHand(dealer);
+        ui.ShowHand(player);
+
+        while (!player.IsBust() && player.Hand.GetHandValue() < 21 && ui.AskMove() == Move.Hit)
+        {
+            player.Hand.AddCard(deck.Draw());
+            ui.ShowHand(player);
+        }
+    }
+
     private void DealInitialCards()
     {
         foreach (Player player in players)
