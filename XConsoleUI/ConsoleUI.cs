@@ -35,19 +35,17 @@ class ConsoleUI
         {
             string name = ConsoleInput.ReadLine("Ange spelarnamn: ");
             
-            if (name.Length > 0 && name.Length > 20)
+            if (name.Length == 0 )
             {
-                Console.WriteLine("Namnet får inte vara längre än 20 tecken. Försök igen.");
+                Console.WriteLine(""Namnet får inte vara tomt.");  
                 continue;
             }
 
-            if (name.Length > 0 && name.Length <= 20)
+            if (name.Length > 20)
             {
-                return name;
+                Console.WriteLine("Namnet får inte vara längre än 20 tecken.");
+                continue;
             }
-
-            Console.WriteLine("Namnet får inte vara tomt eller längre än 20 tecken.");
-        
 
             if (!string.IsNullOrWhiteSpace(name))
             {
