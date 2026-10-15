@@ -47,6 +47,12 @@ class ConsoleUI
                 continue;
             }
 
+            if (int.TryParse(name, out _))
+            {
+                Console.WriteLine("Namnet får inte vara ett nummer.");
+                 continue;
+            }
+
             if (!string.IsNullOrWhiteSpace(name))
             {
                 return name;
