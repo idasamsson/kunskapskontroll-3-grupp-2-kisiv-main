@@ -1,3 +1,5 @@
+using System.IO.Pipelines;
+
 class Hand
 {
     private List<Card> cards = new List<Card>();
@@ -9,32 +11,48 @@ class Hand
         cards.Add(card);
     }
 
-    public int GetHandValue()
+    private (int total, int aceCount) CalculateTotalAndAceCount()
     {
         int total = 0;
         int aceCount = 0;
-
         foreach (Card card in cards)
-        {
-            if (card.Rank == Rank.Ace)
             {
-                aceCount++;
+                if (card.Rank == Rank.Ace)
+                {
+                    aceCount++;
+                }
+
+                total += card.GetValue();
+
             }
+            while (total > 21 && aceCount > 0)
+            {
+                total -= 10;
+                aceCount--;
+            }
+        return (total, aceCount);
+    }
 
-            total += card.GetValue();
-
-        }
-        while (total > 21 && aceCount > 0)
-        {
-            total -= 10;
-            aceCount--;
-        }
+        public int GetHandValue()
+    {  
+        var (total, _) = CalculateTotalAndAceCount();
         return total;
+    }
+
+    public bool IsSoft()
+    {
+        var (_, aceCount) = CalculateTotalAndAceCount();
+        return aceCount > 0;
     }
 
     public bool IsBlackjack()
     {
-        throw new NotImplementedException();
+        return GetHandValue() == 21 && cards.Count == 2;
+    }
+
+    public bool IsBust()
+    {
+        return GetHandValue() > 21;
     }
 
     public void Clear()
