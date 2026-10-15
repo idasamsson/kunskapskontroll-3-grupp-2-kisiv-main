@@ -134,4 +134,21 @@ class Game
         }
         return Outcome.Push;
     }
+
+    private void RecordOutcome(Player player, Outcome outcome)
+    {
+        switch (outcome)
+        {
+            case Outcome.Win:
+            case Outcome.Blackjack:
+                player.Wins++;
+                break;
+            case Outcome.Lose:
+                player.Losses++;
+                break;
+            case Outcome.Push:
+                player.Pushes++;
+                break;
+        }
+    }
 }
