@@ -94,6 +94,13 @@ class Game
 
     private void GameLoop()
     {
+        bool playing = true;
+
+        while (playing)
+        {
+            PlayRound();
+            SaveResults();
+        }
     }
 
     private void PlayRound()
