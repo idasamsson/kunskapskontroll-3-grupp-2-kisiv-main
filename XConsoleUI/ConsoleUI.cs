@@ -73,19 +73,7 @@ class ConsoleUI
             {
                 Console.WriteLine("Ogiltigt val. Skriv 'N' för nytt kort eller 'S' för att stanna.");
             }
-            //Console.WriteLine("Välj ett drag:");
-            //Console.WriteLine("1. Hit");
-            //Console.WriteLine("2. Stand");
-            //int choice = ConsoleInput.ReadInt("Ange ditt val (1-2): ", 1, 2);
-
-            //if (choice == 1)
-            //{
-            //    return Move.Hit;
-            //}
-            //else if (choice == 2)
-            //{
-            //    return Move.Stand;
-            //}
+            
         }
     }
 
