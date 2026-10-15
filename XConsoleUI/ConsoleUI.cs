@@ -19,7 +19,7 @@ class ConsoleUI
 
     public void ShowMessage(string text)
     {
-    Console.WriteLine(text);
+        Console.WriteLine(text);
     }
     public void ShowRules()
     {
@@ -35,19 +35,17 @@ class ConsoleUI
         {
             string name = ConsoleInput.ReadLine("Ange spelarnamn: ");
             
-            if (name.Length > 0 && name.Length > 20)
+            if (name.Length == 0 )
             {
-                Console.WriteLine("Namnet får inte vara längre än 20 tecken. Försök igen.");
+                Console.WriteLine("Namnet får inte vara tomt.");  
                 continue;
             }
 
-            if (name.Length > 0 && name.Length <= 20)
+            if (name.Length > 20)
             {
-                return name;
+                Console.WriteLine("Namnet får inte vara längre än 20 tecken.");
+                continue;
             }
-
-            Console.WriteLine("Namnet får inte vara tomt eller längre än 20 tecken.");
-        
 
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -75,19 +73,7 @@ class ConsoleUI
             {
                 Console.WriteLine("Ogiltigt val. Skriv 'N' för nytt kort eller 'S' för att stanna.");
             }
-            //Console.WriteLine("Välj ett drag:");
-            //Console.WriteLine("1. Hit");
-            //Console.WriteLine("2. Stand");
-            //int choice = ConsoleInput.ReadInt("Ange ditt val (1-2): ", 1, 2);
-
-            //if (choice == 1)
-            //{
-            //    return Move.Hit;
-            //}
-            //else if (choice == 2)
-            //{
-            //    return Move.Stand;
-            //}
+            
         }
     }
 
