@@ -42,3 +42,4 @@ public class Card
         return $"{suit} {rank}"; // Sätt ihop färg och valör, t.ex. "Hjärter 7".
     }
 }
+

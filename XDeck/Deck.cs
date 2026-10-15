@@ -19,6 +19,7 @@ class Deck // En kortlek med 52 kort som kan blandas och dras ifrån.
         }
     }
 
+
     public Card Draw()
     {
         if (cards.Count == 0)
