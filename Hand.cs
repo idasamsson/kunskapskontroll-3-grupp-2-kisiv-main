@@ -47,7 +47,7 @@ class Hand
 
     public bool IsBlackjack()
     {
-        throw new NotImplementedException();
+        return GetHandValue() == 21 && cards.Count == 2;
     }
 
     public void Clear()
