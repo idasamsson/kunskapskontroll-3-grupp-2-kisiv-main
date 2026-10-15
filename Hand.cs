@@ -9,29 +9,27 @@ class Hand
         cards.Add(card);
     }
 
-    public int GetHandValue(List<int> cards)
+    public int GetHandValue()
     {
-        int Total = 0;
-        int Ace = 0;
+        int total = 0;
+        int aceCount = 0;
 
-        foreach (int card in cards)
+        foreach (Card card in cards)
         {
-            if (card == 1)
+            if (card.Rank == Rank.Ace)
             {
-                Ace++; 
-                Total += 11;
+                aceCount++;
             }
-            else
-            {
-                Total += card;
-            }
-        }   
-        while (Total > 21 && Ace > 0)
-            {
-                Total -= 10;
-                Ace--;
-            }
-        return Total; 
+
+            total += card.GetValue();
+
+        }
+        while (total > 21 && aceCount > 0)
+        {
+            total -= 10;
+            aceCount--;
+        }
+        return total;
     }
 
     public bool IsBlackjack()
@@ -41,5 +39,6 @@ class Hand
 
     public void Clear()
     {
+        cards.Clear();
     }
 }
