@@ -32,20 +32,20 @@ class Game
 
             switch (choice)
             {
-            case 1:
-                NewGame();
-                GameLoop();
-                break;
-            case 2:
-                ui.ShowRules();
-                break;
-            case 3:
-                ui.ShowResults(knownPlayers);
-                break;
-            case 4:
-                SaveResults();
-                running = false;
-                break;
+                case 1:
+                    NewGame();
+                    GameLoop();
+                    break;
+                case 2:
+                    ui.ShowRules();
+                    break;
+                case 3:
+                    ui.ShowResults(knownPlayers);
+                    break;
+                case 4:
+                    SaveResults();
+                    running = false;
+                    break;
             }
         }
     }
@@ -100,6 +100,20 @@ class Game
     {
         deck.ResetIfLow();
         DealInitialCards();
+
+        foreach (Player player in players)
+        {
+            PlayPlayerTurn(player);
+        }
+
+        PlayDealerTurn();
+
+        foreach (Player player in players)
+        {
+            Outcome outcome = DetermineOutcome(player);
+            RecordOutcome(player, outcome);
+            ui.ShowOutcome(player, outcome);
+        }
     }
 
     private void PlayPlayerTurn(Player player)
@@ -114,13 +128,19 @@ class Game
         }
     }
 
+    private void PlayDealerTurn()
+    {
+        dealer.PlayTurn(deck);
+        ui.ShowHand(dealer);
+    }
+
     private void DealInitialCards()
     {
         foreach (Player player in players)
         {
             player.Hand.Clear();
         }
-        dealer.Hand.Clear();
+        dealer.StartNewRound();
 
         for (int i = 0; i < InitialCardCount; i++)
         {
