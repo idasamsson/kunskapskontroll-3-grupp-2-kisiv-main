@@ -20,7 +20,7 @@ class Game
         players = new List<Player>();
         knownPlayers = new List<Player>();
     }
-    
+
     public void Run()
     {
         knownPlayers = storage.LoadPlayers();
@@ -51,6 +51,15 @@ class Game
 
     private void NewGame()
     {
+        players.Clear();
+
+        int count = ui.AskPlayerCount();
+
+        for (int i = 0; i < count; i++)
+        {
+            string name = ui.AskPlayerName();
+            AddPlayer(name);
+        }
     }
 
     private void AddPlayer(string name)
