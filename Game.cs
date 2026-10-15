@@ -83,7 +83,7 @@ class Game
         }
         dealer.Hand.Clear();
 
-        for (int i = 0; i < InitialCardCount; i++);
+        for (int i = 0; i < InitialCardCount; i++)
         {
             foreach (Player player in players)
             {
@@ -93,8 +93,45 @@ class Game
         }
     }
 
-    private Outcome DetermineOutcome(Player p)
+    private Outcome DetermineOutcome(Player player)
     {
-        throw new NotImplementedException();
+        if (player.IsBust())
+        {
+            return Outcome.Lose;
+        }
+
+        bool playerBlackjack = player.Hand.IsBlackjack();
+        bool dealerBlackjack = dealer.Hand.IsBlackjack();
+
+        if (playerBlackjack && dealerBlackjack)
+        {
+            return Outcome.Push;
+        }
+        if (playerBlackjack)
+        {
+            return Outcome.Blackjack;
+        }
+        if (dealerBlackjack)
+        {
+            return Outcome.Lose;
+        }
+
+        if (dealer.IsBust())
+        {
+            return Outcome.Win;
+        }
+
+        int playerValue = player.Hand.GetHandValue();
+        int dealerValue = dealer.Hand.GetHandValue();
+
+        if (playerValue > dealerValue)
+        {
+            return Outcome.Win;
+        }
+        if (playerValue < dealerValue)
+        {
+            return Outcome.Lose;
+        }
+        return Outcome.Push;
     }
 }
