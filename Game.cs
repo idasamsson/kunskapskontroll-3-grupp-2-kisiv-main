@@ -6,6 +6,15 @@ class Game
     private ConsoleUI ui;
     private GameStorage storage;
 
+    public Game(Random random, ConsoleUI ui, GameStorage storage)
+    {
+        this.deck = new Deck(random);
+        this.dealer = new Dealer { Name = "Dealer", Hand = new Hand() };
+        this.players = new List<Player>();
+        this.ui = ui;
+        this.storage = storage;
+    }
+
     public void Run()
     {
     }
