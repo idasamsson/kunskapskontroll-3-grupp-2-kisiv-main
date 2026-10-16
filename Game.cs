@@ -1,7 +1,6 @@
 class Game
 {
     private const int MaxPlayers = 5;
-    private const int InitialCardCount = 2;
     private Deck deck;
     private Dealer dealer;
     private List<Player> players;
@@ -112,8 +111,8 @@ class Game
 
     private void PlayRound()
     {
-        deck.ResetIfLow();
-        DealInitialCards();
+       Round round = new Round(deck, dealer, players);
+       round.Deal();
 
         foreach (Player player in players)
         {
@@ -146,24 +145,6 @@ class Game
     {
         dealer.PlayTurn(deck);
         ui.ShowHand(dealer);
-    }
-
-    private void DealInitialCards()
-    {
-        foreach (Player player in players)
-        {
-            player.Hand.Clear();
-        }
-        dealer.StartNewRound();
-
-        for (int i = 0; i < InitialCardCount; i++)
-        {
-            foreach (Player player in players)
-            {
-                player.Hand.AddCard(deck.Draw());
-            }
-            dealer.Hand.AddCard(deck.Draw());
-        }
     }
 
     private Outcome DetermineOutcome(Player player)
