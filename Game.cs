@@ -2,7 +2,6 @@ class Game
 {
     private const int MaxPlayers = 5;
     private const int InitialCardCount = 2;
-    private readonly Random random;
     private Deck deck;
     private Dealer dealer;
     private List<Player> players;
@@ -12,7 +11,6 @@ class Game
 
     public Game(Random random, ConsoleUI ui, GameStorage storage)
     {
-        this.random = random;
         this.ui = ui;
         this.storage = storage;
         deck = new Deck(random);
@@ -56,10 +54,18 @@ class Game
 
         int count = ui.AskPlayerCount();
 
-        for (int i = 0; i < count; i++)
+        while (players.Count < count)
         {
             string name = ui.AskPlayerName();
-            AddPlayer(name);
+
+            if (players.Exists(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            {
+                ui.ShowMessage("Den spelaren ssitter redan vid bordet. Välj ett annat namn.");
+            }
+            else
+            {
+                AddPlayer(name);
+            }
         }
     }
 
