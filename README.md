@@ -9,6 +9,7 @@ Gruppen lämnar in en README.md i repots rot som innehåller:
 * Vem som gjort vad — vilket tillval var och en har byggt
 
 * Vilka regler som gäller, om ni avvikit från specifikationen på någon punkt
+    * Spelarnamn får inte vara tomma, längre än 20 tecken eller innehålla semikolon (;), eftersom sparfilen använder semikolon som avgränsare.
 
 * Kända brister
 
