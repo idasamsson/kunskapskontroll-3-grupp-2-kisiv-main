@@ -41,6 +41,14 @@ class ConsoleUI
 
     public void ShowResults(List<Player> players)
     {
+        Console.WriteLine();
+        Console.WriteLine("--- Resultat ---");
+        Console.WriteLine($"{"Spelare",-20} {"Vunna",6} {"Förlorade",10} {"Lika",6}");
+
+        foreach (Player p in players)
+        {
+            Console.WriteLine($"{p.Name,-20} {p.Wins,6} {p.Losses,10} {p.Pushes,6}");
+        }
     }
 
     public string AskPlayerName()
