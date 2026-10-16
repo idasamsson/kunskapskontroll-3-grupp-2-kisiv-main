@@ -34,10 +34,10 @@ class ConsoleUI
         while (true)
         {
             string name = ConsoleInput.ReadLine("Ange spelarnamn: ");
-            
-            if (name.Length == 0 )
+
+            if (name.Length == 0)
             {
-                Console.WriteLine("Namnet får inte vara tomt.");  
+                Console.WriteLine("Namnet får inte vara tomt.");
                 continue;
             }
 
@@ -47,11 +47,13 @@ class ConsoleUI
                 continue;
             }
 
-            if (!string.IsNullOrWhiteSpace(name))
+            if (int.TryParse(name, out _))
             {
-                return name;
+                Console.WriteLine("Namnet får inte vara ett nummer.");
+                continue;
             }
-            Console.WriteLine("Ogiltigt namn. Försök igen.");
+
+            return name;
         }
     }
 
@@ -75,6 +77,27 @@ class ConsoleUI
             }
             
         }
+
+    }
+
+    public bool AskPlayAgain()
+    {
+    while (true)
+    {
+        string input = ConsoleInput.ReadLine("Spela en runda till? (J/N) ").ToUpper();
+
+        if (input == "J")
+        {
+            return true;
+        }
+        if (input == "N")
+        {
+            return false;
+        }
+
+        Console.WriteLine("Ogiltigt val. Skriv 'J' för ja eller 'N' för nej.");
+    }
+
     }
 
     public void ShowHand(Participant p)
