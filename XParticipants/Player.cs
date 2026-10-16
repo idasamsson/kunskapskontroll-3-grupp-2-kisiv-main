@@ -1,8 +1,8 @@
 class Player : Participant
 {
+    
+    private IMoveChooser? moveChooser;
     /*
-    private IMoveChooser moveChooser;
-
     public Player(IMoveChooser moveChooser)
     {
         this.moveChooser = moveChooser;
