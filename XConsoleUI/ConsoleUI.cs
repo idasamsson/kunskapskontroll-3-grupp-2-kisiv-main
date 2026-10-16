@@ -47,9 +47,10 @@ class ConsoleUI
                 continue;
             }
 
-            if (int.TryParse(name, out _))
+            // GameStorage sparar spelare som namn;vinster;förluster;lika
+            if (name.Contains(';'))
             {
-                Console.WriteLine("Namnet får inte vara ett nummer.");
+                Console.WriteLine("Namnet får inte innehålla semikolon (;).");
                 continue;
             }
 
@@ -62,7 +63,7 @@ class ConsoleUI
         while (true)
         {
             string input = ConsoleInput.ReadLine("Nytt kort (N) eller stanna (S)? ").ToUpper();
-            
+
             if (input == "N")
             {
                 return Move.Hit;
@@ -75,28 +76,28 @@ class ConsoleUI
             {
                 Console.WriteLine("Ogiltigt val. Skriv 'N' för nytt kort eller 'S' för att stanna.");
             }
-            
+
         }
 
     }
 
     public bool AskPlayAgain()
     {
-    while (true)
-    {
-        string input = ConsoleInput.ReadLine("Spela en runda till? (J/N) ").ToUpper();
-
-        if (input == "J")
+        while (true)
         {
-            return true;
-        }
-        if (input == "N")
-        {
-            return false;
-        }
+            string input = ConsoleInput.ReadLine("Spela en runda till? (J/N) ").ToUpper();
 
-        Console.WriteLine("Ogiltigt val. Skriv 'J' för ja eller 'N' för nej.");
-    }
+            if (input == "J")
+            {
+                return true;
+            }
+            if (input == "N")
+            {
+                return false;
+            }
+
+            Console.WriteLine("Ogiltigt val. Skriv 'J' för ja eller 'N' för nej.");
+        }
 
     }
 
