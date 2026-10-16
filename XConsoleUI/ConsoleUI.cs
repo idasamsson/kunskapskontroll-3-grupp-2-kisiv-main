@@ -34,10 +34,10 @@ class ConsoleUI
         while (true)
         {
             string name = ConsoleInput.ReadLine("Ange spelarnamn: ");
-            
-            if (name.Length == 0 )
+
+            if (name.Length == 0)
             {
-                Console.WriteLine("Namnet får inte vara tomt.");  
+                Console.WriteLine("Namnet får inte vara tomt.");
                 continue;
             }
 
@@ -50,14 +50,10 @@ class ConsoleUI
             if (int.TryParse(name, out _))
             {
                 Console.WriteLine("Namnet får inte vara ett nummer.");
-                 continue;
+                continue;
             }
 
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                return name;
-            }
-            Console.WriteLine("Ogiltigt namn. Försök igen.");
+            return name;
         }
     }
 
