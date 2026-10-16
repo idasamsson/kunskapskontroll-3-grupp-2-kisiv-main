@@ -131,7 +131,7 @@ void BuildHand()
     ShowHand("Handen", hand);
 
     Player player = new Player { Name = "Test", Hand = hand };
-    Console.WriteLine($"  IsBust()       = {Try(() => player.IsBust())}");
+    Console.WriteLine($"  IsBust()       = {Try(() => player.Hand.IsBust())}");
 
     Dealer dealer = new Dealer { Name = "Dealer", Hand = hand };
     Console.WriteLine($"  Dealer.MakeMove() med denna hand = {Try(() => dealer.MakeMove())}");
