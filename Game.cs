@@ -111,8 +111,8 @@ class Game
 
     private void PlayRound()
     {
-       Round round = new Round(deck, dealer, players);
-       round.Deal();
+        Round round = new Round(deck, dealer, players);
+        round.Deal();
 
         foreach (Player player in players)
         {
@@ -124,9 +124,8 @@ class Game
 
         foreach (Player player in players)
         {
-            Outcome outcome = DetermineOutcome(player);
-            RecordOutcome(player, outcome);
-            ui.ShowOutcome(player, outcome);
+           Outcome outcome = round.Settle(player);
+           ui.ShowOutcome(player, outcome);
         }
     }
 
@@ -139,65 +138,6 @@ class Game
         {
             round.Hit(player);
             ui.ShowHand(player);
-        }
-    }
-
-    private Outcome DetermineOutcome(Player player)
-    {
-        if (player.Hand.IsBust())
-        {
-            return Outcome.Lose;
-        }
-
-        bool playerBlackjack = player.Hand.IsBlackjack();
-        bool dealerBlackjack = dealer.Hand.IsBlackjack();
-
-        if (playerBlackjack && dealerBlackjack)
-        {
-            return Outcome.Push;
-        }
-        if (playerBlackjack)
-        {
-            return Outcome.Blackjack;
-        }
-        if (dealerBlackjack)
-        {
-            return Outcome.Lose;
-        }
-
-        if (dealer.Hand.IsBust())
-        {
-            return Outcome.Win;
-        }
-
-        int playerValue = player.Hand.GetHandValue();
-        int dealerValue = dealer.Hand.GetHandValue();
-
-        if (playerValue > dealerValue)
-        {
-            return Outcome.Win;
-        }
-        if (playerValue < dealerValue)
-        {
-            return Outcome.Lose;
-        }
-        return Outcome.Push;
-    }
-
-    private void RecordOutcome(Player player, Outcome outcome)
-    {
-        switch (outcome)
-        {
-            case Outcome.Win:
-            case Outcome.Blackjack:
-                player.Wins++;
-                break;
-            case Outcome.Lose:
-                player.Losses++;
-                break;
-            case Outcome.Push:
-                player.Pushes++;
-                break;
         }
     }
 }
