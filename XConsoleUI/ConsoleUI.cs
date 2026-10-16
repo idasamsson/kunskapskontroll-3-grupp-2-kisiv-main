@@ -12,9 +12,9 @@ class ConsoleUI
         return ConsoleInput.ReadInt("Välj ett alternativ (1-4): ", 1, 4);
     }
 
-    public int AskPlayerCount()
+    public int AskPlayerCount(int max = 5)
     {
-        return ConsoleInput.ReadInt("Hur många spelare (1-5)? ", 1, 5);
+        return ConsoleInput.ReadInt($"Hur många spelare (1-{max})? ", 1, max);
     }
 
     public void ShowMessage(string text)
@@ -69,9 +69,10 @@ class ConsoleUI
                 continue;
             }
 
-            if (int.TryParse(name, out _))
+            // GameStorage sparar spelare som namn;vinster;förluster;lika
+            if (name.Contains(';'))
             {
-                Console.WriteLine("Namnet får inte vara ett nummer.");
+                Console.WriteLine("Namnet får inte innehålla semikolon (;).");
                 continue;
             }
 
@@ -104,21 +105,21 @@ class ConsoleUI
 
     public bool AskPlayAgain()
     {
-    while (true)
-    {
-        string input = ConsoleInput.ReadLine("Spela en runda till? (J/N) ").ToUpper();
-
-        if (input == "J")
+        while (true)
         {
-            return true;
-        }
-        if (input == "N")
-        {
-            return false;
-        }
+            string input = ConsoleInput.ReadLine("Spela en runda till? (J/N) ").ToUpper();
 
-        Console.WriteLine("Ogiltigt val. Skriv 'J' för ja eller 'N' för nej.");
-    }
+            if (input == "J")
+            {
+                return true;
+            }
+            if (input == "N")
+            {
+                return false;
+            }
+
+            Console.WriteLine("Ogiltigt val. Skriv 'J' för ja eller 'N' för nej.");
+        }
 
     }
 
