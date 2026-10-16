@@ -12,6 +12,13 @@ class Player : Participant
     public int Losses;
     public int Pushes;
 
+    private Card? dealerCard; 
+
+    public void ReceiveDealerCard(Card dealerCard)
+    {
+        this.dealerCard = dealerCard;
+    }
+
     public override Move MakeMove()
     {
         //if ()
