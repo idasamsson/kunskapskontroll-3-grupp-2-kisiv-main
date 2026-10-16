@@ -1,4 +1,5 @@
 namespace XConsoleUI;
+
 internal static class ConsoleInput
 {
     // Skriver ut frågan, läser en rad och trimmar den.
