@@ -100,6 +100,7 @@ class Game
         {
             PlayRound();
             SaveResults();
+            playing = ui.AskPlayAgain();
         }
     }
 
