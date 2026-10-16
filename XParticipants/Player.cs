@@ -20,12 +20,17 @@ class Player : Participant
     }
 
     public override Move MakeMove()
-    {
-        //if ()
+    { 
+        if (dealerCard == null)
         {
-           throw new InvalidOperationException(); 
+            throw new InvalidOperationException("Givaren måste ha ett synligt kort."); 
         }
-        
+        if (moveChooser == null)
+        {
+            throw new InvalidOperationException("Spelaren har ingen beslutsfattare. Skicka in en IMoveChooser när Player skapas."); 
+        }
+
+       return moveChooser.ChooseMove(Hand, dealerCard);
     }
 }
 
