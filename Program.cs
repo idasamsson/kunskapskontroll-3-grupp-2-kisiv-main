@@ -185,7 +185,7 @@ void PlayTestRound()
         Console.WriteLine($"Du fick {card}");
         ShowHand("Din hand", player.Hand);
     }
-    Console.WriteLine($"  IsBust()       = {Try(() => player.IsBust())}");
+    Console.WriteLine($"  IsBust()       = {Try(() => player.Hand.IsBust())}");
 
     int playerValue = player.Hand.GetHandValue();
     if (playerValue > 21)
