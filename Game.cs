@@ -116,10 +116,11 @@ class Game
 
         foreach (Player player in players)
         {
-            PlayPlayerTurn(player);
+            PlayPlayerTurn(player, round);
         }
 
-        PlayDealerTurn();
+        round.PlayDealerTurn();
+        ui.ShowHand(dealer);
 
         foreach (Player player in players)
         {
@@ -129,22 +130,16 @@ class Game
         }
     }
 
-    private void PlayPlayerTurn(Player player)
+    private void PlayPlayerTurn(Player player, Round round)
     {
         ui.ShowHand(dealer);
         ui.ShowHand(player);
 
-        while (!player.Hand.IsBust() && player.Hand.GetHandValue() < 21 && ui.AskMove() == Move.Hit)
+        while (round.CanHit(player) && ui.AskMove() == Move.Hit)
         {
-            player.Hand.AddCard(deck.Draw());
+            round.Hit(player);
             ui.ShowHand(player);
         }
-    }
-
-    private void PlayDealerTurn()
-    {
-        dealer.PlayTurn(deck);
-        ui.ShowHand(dealer);
     }
 
     private Outcome DetermineOutcome(Player player)

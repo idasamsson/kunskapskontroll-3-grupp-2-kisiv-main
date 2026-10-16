@@ -1,6 +1,7 @@
 class Round
 {
     private const int InitialCardCount = 2;
+    private const int BlackjackValue = 21;
     private readonly Deck deck;
     private readonly Dealer dealer;
     private readonly List<Player> players;
@@ -29,5 +30,20 @@ class Round
             }
             dealer.Hand.AddCard(deck.Draw());
         }
+    }
+
+    public bool CanHit(Player player)
+    {
+        return player.Hand.GetHandValue() < BlackjackValue;
+    }
+
+    public void Hit(Player player)
+    {
+        player.Hand.AddCard(deck.Draw());
+    }
+
+    public void PlayDealerTurn()
+    {
+        dealer.PlayTurn(deck);
     }
 }
