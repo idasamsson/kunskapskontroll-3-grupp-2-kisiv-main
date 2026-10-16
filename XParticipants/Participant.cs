@@ -7,6 +7,6 @@ abstract class Participant
 
     public bool IsBust()
     {
-        throw new NotImplementedException();
+       return Hand.IsBust();
     }
 }
