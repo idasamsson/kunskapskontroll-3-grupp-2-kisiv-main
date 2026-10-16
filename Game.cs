@@ -1,7 +1,6 @@
 class Game
 {
     private const int MaxPlayers = 5;
-    private const int InitialCardCount = 2;
     private Deck deck;
     private Dealer dealer;
     private List<Player> players;
@@ -112,116 +111,33 @@ class Game
 
     private void PlayRound()
     {
-        deck.ResetIfLow();
-        DealInitialCards();
+        Round round = new Round(deck, dealer, players);
+        round.Deal();
 
         foreach (Player player in players)
         {
-            PlayPlayerTurn(player);
+            PlayPlayerTurn(player, round);
         }
 
-        PlayDealerTurn();
+        round.PlayDealerTurn();
+        ui.ShowHand(dealer);
 
         foreach (Player player in players)
         {
-            Outcome outcome = DetermineOutcome(player);
-            RecordOutcome(player, outcome);
-            ui.ShowOutcome(player, outcome);
+           Outcome outcome = round.Settle(player);
+           ui.ShowOutcome(player, outcome);
         }
     }
 
-    private void PlayPlayerTurn(Player player)
+    private void PlayPlayerTurn(Player player, Round round)
     {
         ui.ShowHand(dealer);
         ui.ShowHand(player);
 
-        while (!player.Hand.IsBust() && player.Hand.GetHandValue() < 21 && ui.AskMove() == Move.Hit)
+        while (round.CanHit(player) && ui.AskMove() == Move.Hit)
         {
-            player.Hand.AddCard(deck.Draw());
+            round.Hit(player);
             ui.ShowHand(player);
-        }
-    }
-
-    private void PlayDealerTurn()
-    {
-        dealer.PlayTurn(deck);
-        ui.ShowHand(dealer);
-    }
-
-    private void DealInitialCards()
-    {
-        foreach (Player player in players)
-        {
-            player.Hand.Clear();
-        }
-        dealer.StartNewRound();
-
-        for (int i = 0; i < InitialCardCount; i++)
-        {
-            foreach (Player player in players)
-            {
-                player.Hand.AddCard(deck.Draw());
-            }
-            dealer.Hand.AddCard(deck.Draw());
-        }
-    }
-
-    private Outcome DetermineOutcome(Player player)
-    {
-        if (player.Hand.IsBust())
-        {
-            return Outcome.Lose;
-        }
-
-        bool playerBlackjack = player.Hand.IsBlackjack();
-        bool dealerBlackjack = dealer.Hand.IsBlackjack();
-
-        if (playerBlackjack && dealerBlackjack)
-        {
-            return Outcome.Push;
-        }
-        if (playerBlackjack)
-        {
-            return Outcome.Blackjack;
-        }
-        if (dealerBlackjack)
-        {
-            return Outcome.Lose;
-        }
-
-        if (dealer.Hand.IsBust())
-        {
-            return Outcome.Win;
-        }
-
-        int playerValue = player.Hand.GetHandValue();
-        int dealerValue = dealer.Hand.GetHandValue();
-
-        if (playerValue > dealerValue)
-        {
-            return Outcome.Win;
-        }
-        if (playerValue < dealerValue)
-        {
-            return Outcome.Lose;
-        }
-        return Outcome.Push;
-    }
-
-    private void RecordOutcome(Player player, Outcome outcome)
-    {
-        switch (outcome)
-        {
-            case Outcome.Win:
-            case Outcome.Blackjack:
-                player.Wins++;
-                break;
-            case Outcome.Lose:
-                player.Losses++;
-                break;
-            case Outcome.Push:
-                player.Pushes++;
-                break;
         }
     }
 }
