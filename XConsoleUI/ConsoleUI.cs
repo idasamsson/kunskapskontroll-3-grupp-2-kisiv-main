@@ -97,5 +97,15 @@ class ConsoleUI
 
     public void ShowOutcome(Player p, Outcome o)
     {
+        string text = o switch
+        {
+            Outcome.Win => "vinner!",
+            Outcome.Lose => "förlorar.",
+            Outcome.Push => "får lika, ingen vinner eller förlorar.",
+            Outcome.Blackjack => "har naturlig tjugoett!",
+            _ => "har ett okänt resultat."
+        };
+
+        Console.WriteLine($"{p.Name} {text}");
     }
 }
