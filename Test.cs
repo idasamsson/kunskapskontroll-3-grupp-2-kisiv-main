@@ -170,9 +170,9 @@ static class Tests
         Run("IsBust", () =>
         {
             Player player = new Player { Name = "Test", Hand = MakeHand(Rank.King, Rank.Queen, Rank.Five) };
-            Check("25 är tjock", player.IsBust());
+            Check("25 är tjock", player.Hand.IsBust());
             player.Hand = MakeHand(Rank.King, Rank.Ace);
-            Check("21 är inte tjock", !player.IsBust());
+            Check("21 är inte tjock", !player.Hand.IsBust());
         });
         Run("Dealer.MakeMove", () =>
         {

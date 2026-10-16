@@ -5,8 +5,4 @@ abstract class Participant
 
     public abstract Move MakeMove();
 
-    public bool IsBust()
-    {
-        throw new NotImplementedException();
-    }
 }
