@@ -81,6 +81,27 @@ class ConsoleUI
             }
             
         }
+
+    }
+
+    public bool AskPlayAgain()
+    {
+    while (true)
+    {
+        string input = ConsoleInput.ReadLine("Spela en runda till? (J/N) ").ToUpper();
+
+        if (input == "J")
+        {
+            return true;
+        }
+        if (input == "N")
+        {
+            return false;
+        }
+
+        Console.WriteLine("Ogiltigt val. Skriv 'J' för ja eller 'N' för nej.");
+    }
+
     }
 
     public void ShowHand(Participant p)
