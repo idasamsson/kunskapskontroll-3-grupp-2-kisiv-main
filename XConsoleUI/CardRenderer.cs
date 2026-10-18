@@ -39,4 +39,17 @@ class CardRenderer
         rows[Height - 1] = "└" + new string('─', InnerWidth) + "┘";
         return rows;
     }
+
+    // Lägger texten i mitten av kortet och fyller ut med mellanslag till full bredd.
+    private static string Center(string text)
+    {
+        if (text.Length == 0)
+        {
+            return new string(' ', InnerWidth);
+        }
+
+        int left = (InnerWidth - text.Length) / 2;
+        int right = InnerWidth - text.Length - left;
+        return new string(' ', left) + text + new string(' ', right);
+    }
 }
