@@ -73,4 +73,16 @@ class CardRenderer
             _ => throw new ArgumentOutOfRangeException(nameof(rank), rank, null)
         };
     }
+
+    private static string SuitSymbol(Suit suit)
+    {
+        return suit switch
+        {
+            Suit.Hearts => "♥",
+            Suit.Diamonds => "♦",
+            Suit.Clubs => "♣",
+            Suit.Spades => "♠",
+            _ => throw new ArgumentOutOfRangeException(nameof(suit), suit, null)
+        };
+    }
 }
