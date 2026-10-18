@@ -85,4 +85,16 @@ class CardRenderer
             _ => throw new ArgumentOutOfRangeException(nameof(suit), suit, null)
         };
     }
+
+    // Klädda kort får en schackpjäs ovanför färgen: knekt = häst, dam = dam, kung = kung.
+    private static string FaceGlyph(Rank rank)
+    {
+        return rank switch
+        {
+            Rank.Jack => "♞",
+            Rank.Queen => "♛",
+            Rank.King => "♚",
+            _ => ""
+        };
+    }
 }
