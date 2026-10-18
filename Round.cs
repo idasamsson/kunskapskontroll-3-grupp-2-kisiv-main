@@ -1,3 +1,5 @@
+using System.Threading.Channels;
+
 class Round
 {
     private const int InitialCardCount = 2;
@@ -29,6 +31,13 @@ class Round
                 player.Hand.AddCard(deck.Draw());
             }
             dealer.Hand.AddCard(deck.Draw());
+        }
+
+        Card dealerOpenCard = dealer.Hand.Cards[0];
+
+        foreach (Player player in players)
+        {
+            player.ReceiveDealerCard(dealerOpenCard);
         }
     }
 
