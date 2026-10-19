@@ -15,7 +15,7 @@ class Game
         this.storage = storage;
         this.rules = rules;
         deck = new Deck(random);
-        dealer = new Dealer();
+        dealer = new Dealer(rules.DealerHitsSoft17);
         players = new List<Player>();
         knownPlayers = new List<Player>();
     }
