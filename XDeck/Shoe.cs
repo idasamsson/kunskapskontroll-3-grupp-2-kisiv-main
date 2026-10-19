@@ -24,16 +24,28 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         {
             foreach (Suit suit in Enum.GetValues<Suit>())
             {
-                foreach (Rank rank  in Enum.GetValues<Rank>())
+                foreach (Rank rank in Enum.GetValues<Rank>())
                 {
                     cards.Add(new Card(rank, suit));
-                }                
+                }              
             }
         }
         
+        Shuffle();
     }
+
     public int Count()
     {
-        return cards.Count();
-    }   
+        return cards.Count;
+    }
+
+    
+    private void Shuffle() //Fisher-Yates: gå baklänges och byt varje kort med slumpvalt kort på plats 0..i
+    {
+        for (int i = cards.Count - 1; i > 0; i--)
+        {
+            int j = random.Next(i + 1);
+            (cards[i], cards[j]) = (cards[j], cards[i]);
+        }
+    }
 }
