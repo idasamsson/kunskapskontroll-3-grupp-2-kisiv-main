@@ -16,7 +16,7 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         Reset();
     }
 
-    public void Reset() // Bygger en ny sko med alla lekar o blandar den.
+    public void Reset() // Bygger en ny sko med alla lekar och blandar den.
     {
         cards = new List<Card>();
 
@@ -27,7 +27,7 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
                 foreach (Rank rank in Enum.GetValues<Rank>())
                 {
                     cards.Add(new Card(rank, suit));
-                }         
+                }       
             }
         }
         
