@@ -40,6 +40,8 @@ class CardRenderer
         return rows;
     }
 
+    public const int CardGap = 1; // mellanrum mellan korten
+
     // Lägger texten i mitten av kortet och fyller ut med mellanslag till full bredd.
     private static string Center(string text)
     {
