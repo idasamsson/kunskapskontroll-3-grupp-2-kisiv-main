@@ -75,4 +75,15 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
 
         return card;
     }
+
+    // Blandar om skon mellan rundorna:
+    // - när skiljekortet har dragits (det vanliga), eller
+    //- när färre än threshold kort kvar (skydd så att skon inte tar slut mitt i en runda).
+    public void ResetIfLow(int threshold)
+    {
+        if (CutCardReached || cards.Count < threshold)
+        {
+            Reset();
+        }
+    }
 }
