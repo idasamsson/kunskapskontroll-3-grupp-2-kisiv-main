@@ -1,4 +1,4 @@
-class Deck // En kortlek med 52 kort som kan blandas och dras ifrån.
+class Deck : ICardSource // En kortlek med 52 kort som kan blandas och dras ifrån.
 {
     private List<Card> cards = new();
     private readonly Random random;
