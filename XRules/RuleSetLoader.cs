@@ -1,9 +1,10 @@
 class RuleSetLoader
 {
     private const char Separator = '=';
+    private const int MinReshuffleThreshold = 15;
     private readonly string filePath;
 
-    public List<string> Warnings { get; } = new List<String>();
+    public List<string> Warnings { get; } = new List<string>();
 
     public RuleSetLoader(string filePath = "rules.txt")
     {
@@ -71,7 +72,7 @@ class RuleSetLoader
                 break;
 
             case "ReshuffleThreshold":
-                if (int.TryParse(value, out int threshold) && threshold >= 0)
+                if (int.TryParse(value, out int threshold) && threshold >= MinReshuffleThreshold)
                 {
                     rules.ReshuffleThreshold = threshold;
                 }
