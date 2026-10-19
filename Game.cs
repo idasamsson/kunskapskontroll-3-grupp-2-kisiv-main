@@ -136,7 +136,7 @@ class Game
         ui.ShowHand(dealer);
         ui.ShowHand(player);
 
-        while (round.CanHit(player) && ui.AskMove() == Move.Hit)
+        while (round.CanHit(player) && player.MakeMove() == Move.Hit)
         {
             round.Hit(player);
             ui.ShowHand(player);
