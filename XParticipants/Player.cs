@@ -2,17 +2,15 @@ class Player : Participant
 {
     
     private IMoveChooser? moveChooser;
-    /*
-    public Player(IMoveChooser moveChooser)
-    {
-        this.moveChooser = moveChooser;
-    }
-    */
+    private Card? dealerCard; 
     public int Wins;
     public int Losses;
     public int Pushes;
 
-    private Card? dealerCard; 
+    public void ReceiveMoveChooser(IMoveChooser moveChooser)
+    {
+        this.moveChooser = moveChooser;
+    }
 
     public void ReceiveDealerCard(Card dealerOpenCard)
     {
