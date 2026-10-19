@@ -144,6 +144,8 @@ class Game
            Outcome outcome = round.Settle(player);
            ui.ShowOutcome(player, outcome);
         }
+
+        ObserveTable();
     }
 
     private void PlayPlayerTurn(Player player, Round round)
@@ -155,6 +157,29 @@ class Game
         {
             round.Hit(player);
             ui.ShowHand(player);
+        }
+    }
+
+    // Visar räknaren alla kort på bordet när rundan är slut.
+    // Då är även hålkortet vänt, så räknaren ser bara sådant som spelaren också har sett.
+    private void ObserveTable()
+    {
+        if (counter == null)
+        {
+            return;
+        }
+
+        foreach (Player player in players)
+        {
+            foreach (Card card in player.Hand.Cards)
+            {
+                counter.Observe(card);
+            }
+        }
+
+        foreach (Card card in dealer.Hand.Cards)
+        {
+            counter.Observe(card);
         }
     }
 }
