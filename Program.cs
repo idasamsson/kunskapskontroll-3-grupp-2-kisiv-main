@@ -8,6 +8,14 @@ var random = new Random();
 
 var ui = new ConsoleUI();
 var storage = new GameStorage("players.txt");
+var loader = new RuleSetLoader("rules.txt");
+var rules = loader.Load();
+
+foreach (string warning in loader.Warnings)
+{
+    ui.ShowMessage(warning);
+}
+
 var game = new Game(random, ui, storage);
 
 game.Run();

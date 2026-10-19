@@ -7,12 +7,14 @@ class Round
     private readonly Deck deck;
     private readonly Dealer dealer;
     private readonly List<Player> players;
+    private readonly RuleSet rules;
 
-    public Round(Deck deck, Dealer dealer, List<Player> players)
+    public Round(Deck deck, Dealer dealer, List<Player> players, RuleSet rules)
     {
         this.deck = deck;
         this.dealer = dealer;
         this.players = players;
+        this.rules = rules;
     }
 
     public void Deal()
