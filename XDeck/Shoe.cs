@@ -3,6 +3,8 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
     private List<Card> cards = new();
     private readonly Random random;
     private readonly int numberOfDecks;
+    private int cutCardPosition; // Antal kort kvar när skiljekortet kommer fram.
+    public bool CutCardReached { get; private set; }
 
     public Shoe(Random random, int numberOfDecks)
     {
@@ -30,8 +32,9 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
                 }       
             }
         }
-        
+
         Shuffle();
+        PlaceCutCard();
     }
 
     public int Count()
@@ -48,6 +51,14 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         }
     }
 
+    // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
+    private void PlaceCutCard()
+    {
+        int backQuarter = cards.Count / 4;
+        cutCardPosition = random.Next(1, backQuarter + 1);
+        CutCardReached = false;
+    }
+    
     public Card Draw()
     {
         if (cards.Count == 0)
