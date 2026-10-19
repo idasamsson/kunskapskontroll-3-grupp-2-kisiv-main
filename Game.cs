@@ -9,10 +9,11 @@ class Game
     private GameStorage storage;
     private readonly RuleSet rules;
 
-    public Game(Random random, ConsoleUI ui, GameStorage storage)
+    public Game(Random random, ConsoleUI ui, GameStorage storage, RuleSet rules)
     {
         this.ui = ui;
         this.storage = storage;
+        this.rules = rules;
         deck = new Deck(random);
         dealer = new Dealer();
         players = new List<Player>();
@@ -46,13 +47,6 @@ class Game
                     break;
             }
         }
-    }
-
-    public Game(Random random, ConsoleUI ui, GameStorage storage, RuleSet rules)
-    {
-        this.ui = ui;
-        this.storage = storage;
-        this.rules = rules;
     }
 
     private void NewGame()
