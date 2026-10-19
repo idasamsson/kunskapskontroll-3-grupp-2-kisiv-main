@@ -7,12 +7,14 @@ class Round
     private readonly Deck deck;
     private readonly Dealer dealer;
     private readonly List<Player> players;
+    private readonly RuleSet rules;
 
-    public Round(Deck deck, Dealer dealer, List<Player> players)
+    public Round(Deck deck, Dealer dealer, List<Player> players, RuleSet rules)
     {
         this.deck = deck;
         this.dealer = dealer;
         this.players = players;
+        this.rules = rules;
     }
 
     public void Deal()
@@ -63,7 +65,7 @@ class Round
         return outcome;
     }
 
-      private Outcome DetermineOutcome(Player player)
+    private Outcome DetermineOutcome(Player player)
     {
         if (player.Hand.IsBust())
         {
@@ -79,10 +81,18 @@ class Round
         }
         if (playerBlackjack)
         {
+            if (!rules.NaturalBeatsThreeCard21 && dealer.Hand.GetHandValue() == BlackjackValue)
+            {
+                return Outcome.Push;
+            }
             return Outcome.Blackjack;
         }
         if (dealerBlackjack)
         {
+            if (!rules.NaturalBeatsThreeCard21 && player.Hand.GetHandValue() == BlackjackValue)
+            {
+                return Outcome.Push;
+            }
             return Outcome.Lose;
         }
 
