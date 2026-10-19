@@ -29,7 +29,7 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
                 foreach (Rank rank in Enum.GetValues<Rank>())
                 {
                     cards.Add(new Card(rank, suit));
-                }       
+                }
             }
         }
 
@@ -51,14 +51,13 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         }
     }
 
-    // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
-    private void PlaceCutCard()
+    private void PlaceCutCard() // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
     {
         int backQuarter = cards.Count / 4;
         cutCardPosition = random.Next(1, backQuarter + 1);
         CutCardReached = false;
     }
-    
+
     public Card Draw()
     {
         if (cards.Count == 0)
@@ -68,6 +67,12 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
 
         Card card = cards[^1];
         cards.RemoveAt(cards.Count - 1);
+
+        if (cards.Count <= cutCardPosition)
+        {
+            CutCardReached = true;
+        }
+
         return card;
     }
 }
