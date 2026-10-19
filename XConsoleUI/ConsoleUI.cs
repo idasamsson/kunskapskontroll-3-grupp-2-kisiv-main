@@ -2,6 +2,7 @@ using XConsoleUI;
 
 class ConsoleUI
 {
+    private readonly CardRenderer cardRenderer = new CardRenderer();
     public int ShowStartMenu()
     {
         Console.WriteLine("Välkommen till KISIV Blackjack!");
@@ -125,21 +126,30 @@ class ConsoleUI
 
     public void ShowHand(Participant p)
     {
-        // The dealer's second card stays hidden until the dealer's turn
+        // Givarens andra kort är dolt tills det är givarens tur
         bool holeCardHidden = p is Dealer { IsHoleCardRevealed: false };
+        string value = holeCardHidden ? "?" : p.Hand.GetHandValue().ToString();
 
-        var cards = new List<string>();
-        int index = 0;
-        foreach (Card card in p.Hand.Cards)
+        Console.WriteLine();
+        Console.WriteLine($"{p.Name} (värde: {value})");
+
+        foreach (string line in cardRenderer.RenderHand(p.Hand.Cards.ToList(), holeCardHidden, GetWidth()))
         {
-            bool isHoleCard = holeCardHidden && index == 1;
-            cards.Add(isHoleCard ? "[dolt kort]" : card.ToString());
-            index++;
+            Console.WriteLine(line);
         }
+    }
 
-            string value = holeCardHidden ? "?" : p.Hand.GetHandValue().ToString();
-            Console.WriteLine($"{p.Name}: {string.Join("  ", cards)}   (värde: {value})");
+    private static int GetWidth()
+    {
+        try
+        {
+            return Console.WindowWidth;
         }
+        catch (IOException)
+        {
+            return 80; // utdata är omdirigerad
+        }
+    }
 
     public void ShowOutcome(Player p, Outcome o)
     {
