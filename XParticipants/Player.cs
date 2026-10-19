@@ -14,9 +14,9 @@ class Player : Participant
 
     private Card? dealerCard; 
 
-    public void ReceiveDealerCard(Card dealerCard)
+    public void ReceiveDealerCard(Card dealerOpenCard)
     {
-        this.dealerCard = dealerCard;
+        this.dealerCard = dealerOpenCard;
     }
 
     public override Move MakeMove()

@@ -125,7 +125,21 @@ class ConsoleUI
 
     public void ShowHand(Participant p)
     {
-    }
+        // The dealer's second card stays hidden until the dealer's turn
+        bool holeCardHidden = p is Dealer { IsHoleCardRevealed: false };
+
+        var cards = new List<string>();
+        int index = 0;
+        foreach (Card card in p.Hand.Cards)
+        {
+            bool isHoleCard = holeCardHidden && index == 1;
+            cards.Add(isHoleCard ? "[dolt kort]" : card.ToString());
+            index++;
+        }
+
+            string value = holeCardHidden ? "?" : p.Hand.GetHandValue().ToString();
+            Console.WriteLine($"{p.Name}: {string.Join("  ", cards)}   (värde: {value})");
+        }
 
     public void ShowOutcome(Player p, Outcome o)
     {
