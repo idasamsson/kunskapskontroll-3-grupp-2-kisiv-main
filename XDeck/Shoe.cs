@@ -13,6 +13,27 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
 
         this.random = random;
         this.numberOfDecks = numberOfDecks;
+        Reset();
     }
 
+    public void Reset() // Bygger en ny sko med alla lekar.
+    {
+        cards = new List<Card>();
+
+        for (int i = 0; i < numberOfDecks; i++)
+        {
+            foreach (Suit suit in Enum.GetValues<Suit>())
+            {
+                foreach (Rank rank  in Enum.GetValues<Rank>())
+                {
+                    cards.Add(new Card(rank, suit));
+                }                
+            }
+        }
+        
+    }
+    public int Count()
+    {
+        return cards.Count();
+    }   
 }
