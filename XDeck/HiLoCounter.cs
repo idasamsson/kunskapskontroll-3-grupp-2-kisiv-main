@@ -33,4 +33,10 @@ class HiLoCounter
         _   => -1 // Tio, knekt, dam, kung och ess
         };
     }
+
+    // Börja om fron noll. Anropas när skon blandas om.
+    public void Reset()
+    {
+        RunningCount = 0;
+    }
 }
