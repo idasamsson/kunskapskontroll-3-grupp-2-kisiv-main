@@ -3,6 +3,8 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
     private List<Card> cards = new();
     private readonly Random random;
     private readonly int numberOfDecks;
+    private int cutCardPosition; // Antal kort kvar när skiljekortet kommer fram.
+    public bool CutCardReached { get; private set; }
 
     public Shoe(Random random, int numberOfDecks)
     {
@@ -16,7 +18,7 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         Reset();
     }
 
-    public void Reset() // Bygger en ny sko med alla lekar o blandar den.
+    public void Reset() // Bygger en ny sko med alla lekar och blandar den.
     {
         cards = new List<Card>();
 
@@ -27,11 +29,12 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
                 foreach (Rank rank in Enum.GetValues<Rank>())
                 {
                     cards.Add(new Card(rank, suit));
-                }         
+                }
             }
         }
-        
+
         Shuffle();
+        PlaceCutCard();
     }
 
     public int Count()
@@ -48,6 +51,13 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         }
     }
 
+    private void PlaceCutCard() // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
+    {
+        int backQuarter = cards.Count / 4;
+        cutCardPosition = random.Next(1, backQuarter + 1);
+        CutCardReached = false;
+    }
+
     public Card Draw()
     {
         if (cards.Count == 0)
@@ -57,6 +67,23 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
 
         Card card = cards[^1];
         cards.RemoveAt(cards.Count - 1);
+
+        if (cards.Count <= cutCardPosition)
+        {
+            CutCardReached = true;
+        }
+
         return card;
+    }
+
+    // Blandar om skon mellan rundorna:
+    // - när skiljekortet har dragits (det vanliga), eller
+    // - när färre än threshold kort är kvar (skydd så att skon inte tar slut mitt i en runda).
+    public void ResetIfLow(int threshold)
+    {
+        if (CutCardReached || cards.Count < threshold)
+        {
+            Reset();
+        }
     }
 }
