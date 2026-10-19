@@ -8,6 +8,9 @@ class Shoe : ICardSource
     private int cutCardPosition;
     public bool CutCardReached { get; private set; }
 
+    // Meddelar den som lyssnar (t.ex. en korträknare) att skon har blandats om.
+    public event Action? Reshuffled;
+
     public Shoe(Random random, int numberOfDecks)
     {
         if (numberOfDecks < 1)
@@ -19,7 +22,7 @@ class Shoe : ICardSource
         this.numberOfDecks = numberOfDecks;
         Reset();
     }
-    
+
     // Bygger en ny sko med alla lekar och blandar den.
     public void Reset()
     {
@@ -38,6 +41,7 @@ class Shoe : ICardSource
 
         Shuffle();
         PlaceCutCard();
+        Reshuffled?.Invoke();
     }
 
     public int Count()
