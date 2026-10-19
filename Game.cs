@@ -78,6 +78,8 @@ class Game
             knownPlayers.Add(player);
         }
 
+        player.ReceiveMoveChooser(new HumanMoveChooser(ui));
+
         players.Add(player);
     }
 
