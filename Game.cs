@@ -7,11 +7,13 @@ class Game
     private List<Player> knownPlayers;
     private ConsoleUI ui;
     private GameStorage storage;
+    private readonly RuleSet rules;
 
-    public Game(Random random, ConsoleUI ui, GameStorage storage)
+    public Game(Random random, ConsoleUI ui, GameStorage storage, RuleSet rules)
     {
         this.ui = ui;
         this.storage = storage;
+        this.rules = rules;
         deck = new Deck(random);
         dealer = new Dealer();
         players = new List<Player>();
@@ -111,7 +113,7 @@ class Game
 
     private void PlayRound()
     {
-        Round round = new Round(deck, dealer, players);
+        Round round = new Round(deck, dealer, players, rules);
         round.Deal();
 
         foreach (Player player in players)
