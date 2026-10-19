@@ -212,6 +212,20 @@ static class Tests
             File.Delete(path);
         });
 
+        // ---------- PayoutCalculator ----------
+        Console.WriteLine("\nPayoutCalculator");
+        Run("Calculate", () =>
+        {
+            Check("Insats 5 ska ge 0 vid förlust", PayoutCalculator.Calculate(Outcome.Lose, 5) == 0);
+            Check("Insats 5 ska ge 5 vid lika", PayoutCalculator.Calculate(Outcome.Push, 5) == 5);
+            Check("Insats 5 ska ge 10 vid vinst", PayoutCalculator.Calculate(Outcome.Win, 5) == 10);
+            Check("Insats 5 ska ge 13 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 5) == 13);
+            Check("Insats 10 ska ge 0 vid förlust", PayoutCalculator.Calculate(Outcome.Lose, 10) == 0);
+            Check("Insats 10 ska ge 10 vid lika", PayoutCalculator.Calculate(Outcome.Push, 10) == 10);
+            Check("Insats 10 ska ge 20 vid vinst", PayoutCalculator.Calculate(Outcome.Win, 10) == 20);
+            Check("Insats 10 ska ge 25 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 10) == 25);
+        });
+
         // ---------- Summering ----------
         Console.WriteLine($"\nResultat: {passed} OK, {failed} FEL, {notDone} EJ KLARA");
     }
