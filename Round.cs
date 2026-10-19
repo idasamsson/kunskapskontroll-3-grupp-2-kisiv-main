@@ -19,7 +19,7 @@ class Round
 
     public void Deal()
     {
-        deck.ResetIfLow();
+        deck.ResetIfLow(rules.ReshuffleThreshold);
         foreach (Player player in players)
         {
             player.Hand.Clear();
