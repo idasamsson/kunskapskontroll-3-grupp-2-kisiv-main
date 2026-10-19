@@ -129,11 +129,11 @@ static class Tests
             {
                 deck.Draw();
             }
-            deck.ResetIfLow();
+            deck.ResetIfLow(15);
             Check("15 kort kvar: ingen ny lek", deck.Count() == 15);
 
             deck.Draw();
-            deck.ResetIfLow();
+            deck.ResetIfLow(15);
             Check("14 kort kvar: ny lek med 52 kort", deck.Count() == 52);
         });
 
