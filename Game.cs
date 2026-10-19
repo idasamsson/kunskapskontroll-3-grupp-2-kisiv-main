@@ -1,5 +1,3 @@
-using System.Data;
-
 class Game
 {
     private const int MaxPlayers = 5;
@@ -16,7 +14,8 @@ class Game
         this.ui = ui;
         this.storage = storage;
         this.rules = rules;
-        // En lek ger grundversionen med treshold. Fler lekar ger en sko med skiljekort.
+        
+        // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
         if (rules.NumberOfDecks > 1)
         {
             deck = new Shoe(random, rules.NumberOfDecks);
