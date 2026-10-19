@@ -2,6 +2,7 @@ class Game
 {
     private const int MaxPlayers = 5;
     private ICardSource deck;
+    private HiLoCounter? counter;
     private Dealer dealer;
     private List<Player> players;
     private List<Player> knownPlayers;
@@ -18,7 +19,10 @@ class Game
         // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
         if (rules.NumberOfDecks > 1)
         {
-            deck = new Shoe(random, rules.NumberOfDecks);
+            Shoe shoe = new Shoe(random, rules.NumberOfDecks);
+            counter = new HiLoCounter();
+            shoe.Reshuffled += counter.Reset;
+            deck = shoe;
         }
         else
         {
