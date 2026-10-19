@@ -131,6 +131,11 @@ class Game
         Round round = new Round(deck, dealer, players, rules);
         round.Deal();
 
+        if (counter != null)
+        {
+            ui.ShowCount(counter.RunningCount, counter.TrueCount(deck.Count()));
+        }
+
         foreach (Player player in players)
         {
             PlayPlayerTurn(player, round);
