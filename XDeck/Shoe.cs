@@ -19,6 +19,7 @@ class Shoe : ICardSource
         this.numberOfDecks = numberOfDecks;
         Reset();
     }
+    
     // Bygger en ny sko med alla lekar och blandar den.
     public void Reset()
     {
@@ -54,13 +55,14 @@ class Shoe : ICardSource
         }
     }
 
+    // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
     private void PlaceCutCard()
     {
         int backQuarter = cards.Count / 4;
         cutCardPosition = random.Next(1, backQuarter + 1);
         CutCardReached = false;
     }
-    // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
+
     public Card Draw()
     {
         // Nödfall: ska inte hända tack vare skiljekortet och tröskeln,
