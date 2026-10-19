@@ -7,13 +7,15 @@ class Game
     private List<Player> knownPlayers;
     private ConsoleUI ui;
     private GameStorage storage;
+    private readonly RuleSet rules;
 
-    public Game(Random random, ConsoleUI ui, GameStorage storage)
+    public Game(Random random, ConsoleUI ui, GameStorage storage, RuleSet rules)
     {
         this.ui = ui;
         this.storage = storage;
+        this.rules = rules;
         deck = new Deck(random);
-        dealer = new Dealer();
+        dealer = new Dealer(rules.DealerHitsSoft17);
         players = new List<Player>();
         knownPlayers = new List<Player>();
     }
@@ -78,6 +80,8 @@ class Game
             knownPlayers.Add(player);
         }
 
+        player.ReceiveMoveChooser(new HumanMoveChooser(ui));
+
         players.Add(player);
     }
 
@@ -111,7 +115,7 @@ class Game
 
     private void PlayRound()
     {
-        Round round = new Round(deck, dealer, players);
+        Round round = new Round(deck, dealer, players, rules);
         round.Deal();
 
         foreach (Player player in players)
@@ -134,7 +138,7 @@ class Game
         ui.ShowHand(dealer);
         ui.ShowHand(player);
 
-        while (round.CanHit(player) && ui.AskMove() == Move.Hit)
+        while (round.CanHit(player) && player.MakeMove() == Move.Hit)
         {
             round.Hit(player);
             ui.ShowHand(player);

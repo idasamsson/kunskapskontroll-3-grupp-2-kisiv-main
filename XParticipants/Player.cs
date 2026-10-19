@@ -1,36 +1,32 @@
 class Player : Participant
 {
-    
     private IMoveChooser? moveChooser;
-    /*
-    public Player(IMoveChooser moveChooser)
-    {
-        this.moveChooser = moveChooser;
-    }
-    */
+    private Card? dealerOpenCard;
     public int Wins;
     public int Losses;
     public int Pushes;
 
-    private Card? dealerCard; 
+    public void ReceiveMoveChooser(IMoveChooser moveChooser)
+    {
+        this.moveChooser = moveChooser;
+    }
 
     public void ReceiveDealerCard(Card dealerOpenCard)
     {
-        this.dealerCard = dealerOpenCard;
+        this.dealerOpenCard = dealerOpenCard;
     }
 
     public override Move MakeMove()
-    { 
-        if (dealerCard == null)
+    {
+        if (dealerOpenCard == null)
         {
-            throw new InvalidOperationException("Givaren måste ha ett synligt kort."); 
+            throw new InvalidOperationException("Givarens öppna kort saknas. ReceiveDealerCard måste anropas med det kortet innan MakeMove.");
         }
         if (moveChooser == null)
         {
-            throw new InvalidOperationException("Spelaren har ingen beslutsfattare. Skicka in en IMoveChooser när Player skapas."); 
+            throw new InvalidOperationException("Spelaren har ingen beslutsfattare. ReceiveMoveChooser måste anropas innan MakeMove.");
         }
 
-       return moveChooser.ChooseMove(Hand, dealerCard);
+        return moveChooser.ChooseMove(Hand, dealerOpenCard);
     }
 }
-
