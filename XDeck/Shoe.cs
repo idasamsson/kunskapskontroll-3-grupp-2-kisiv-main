@@ -1,9 +1,11 @@
-class Shoe : ICardSource // En sko: flera kortlekar blandade till en hög.
+// En sko: flera kortlekar blandade till en hög.
+class Shoe : ICardSource
 {
     private List<Card> cards = new();
     private readonly Random random;
     private readonly int numberOfDecks;
-    private int cutCardPosition; // Antal kort kvar när skiljekortet kommer fram.
+    // Antal kort kvar när skiljekortet kommer fram.
+    private int cutCardPosition;
     public bool CutCardReached { get; private set; }
 
     public Shoe(Random random, int numberOfDecks)
@@ -17,8 +19,8 @@ class Shoe : ICardSource // En sko: flera kortlekar blandade till en hög.
         this.numberOfDecks = numberOfDecks;
         Reset();
     }
-
-    public void Reset() // Bygger en ny sko med alla lekar och blandar den.
+    // Bygger en ny sko med alla lekar och blandar den.
+    public void Reset()
     {
         cards = new List<Card>();
 
@@ -42,7 +44,8 @@ class Shoe : ICardSource // En sko: flera kortlekar blandade till en hög.
         return cards.Count;
     }
 
-    private void Shuffle() // Fisher-Yates: gå baklänges och byt varje kort med slumpvalt kort på plats 0..i
+    // Fisher-Yates: gå baklänges och byt varje kort med slumpvalt kort på plats 0..i
+    private void Shuffle()
     {
         for (int i = cards.Count - 1; i > 0; i--)
         {
@@ -51,18 +54,20 @@ class Shoe : ICardSource // En sko: flera kortlekar blandade till en hög.
         }
     }
 
-    private void PlaceCutCard() // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
+    private void PlaceCutCard()
     {
         int backQuarter = cards.Count / 4;
         cutCardPosition = random.Next(1, backQuarter + 1);
         CutCardReached = false;
     }
-
+    // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
     public Card Draw()
     {
+        // Nödfall: ska inte hända tack vare skiljekortet och tröskeln,
+        // men hellre en ny sko än att spelet kraschar mitt i en runda.
         if (cards.Count == 0)
         {
-            throw new InvalidOperationException("Skon är tom.");
+            Reset();
         }
 
         Card card = cards[^1];
