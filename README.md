@@ -41,27 +41,14 @@ Reglerna kan ändras i `rules.txt` utan att programmet byggs om. Filen läses n�
 | `ReshuffleThreshold` | `15` | Ny lek när färre än så här många kort är kvar |
 | `NaturalBeatsThreeCard21` | `true` | Vinner naturlig 21 över en 21 av tre kort? Om `false` blir det lika |
 
-Saknas filen används standardreglerna, och programmet säger till. En felstavad regel, en trasig rad eller ett ogiltigt värde (till exempel `NumberOfDecks=0`) ger en varning, och standardvärdet används för just den regeln.
+Saknas filen används standardreglerna, och programmet säger till. En felstavad regel, en trasig rad eller ett ogiltigt värde (till exempel `NumberOfDecks=0`) ger en varning, och standardvärdet används för just den regeln. `ReshuffleThreshold` måste vara minst 15, så att korten inte tar slut mitt i en runda.
 
 ## Kända brister
-- En låg `ReshuffleThreshold` kan göra att leken tar slut mitt i en runda. Då byggs en ny lek, och samma kort kan finnas två gånger på bordet. Med 52 eller mer blir det en ny lek varje runda.
+- Med en lek och `ReshuffleThreshold` på 52 eller mer blandas leken om varje runda.
+- En runda med många spelare kan i sällsynta fall använda fler än 15 kort. Då byggs en ny lek mitt i rundan, och samma kort kan finnas två gånger på bordet.
 - `NumberOfDecks` används först när skon (`Shoe`) är inkopplad i spelet.
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
-
-
-
-
-
-* Vad programmet gör och hur man startar det
-
-* En kort översikt över klasserna och hur de hänger ihop
-
-* Vem som gjort vad — vilket tillval var och en har byggt
-
-* Vilka regler som gäller, om ni avvikit från specifikationen på någon punkt
-    * Spelarnamn får inte vara tomma, längre än 20 tecken eller innehålla semikolon (;), eftersom sparfilen använder semikolon som avgränsare.
-
 
 ## Klassdiagram
 
