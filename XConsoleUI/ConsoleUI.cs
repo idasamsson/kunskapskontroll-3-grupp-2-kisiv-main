@@ -133,11 +133,40 @@ class ConsoleUI
         Console.WriteLine();
         Console.WriteLine($"{p.Name} (värde: {value})");
 
-        foreach (string line in cardRenderer.RenderHand(p.Hand.Cards.ToList(), holeCardHidden, GetWidth()))
+        var cards = p.Hand.Cards.ToList();
+        var blocks = cardRenderer.RenderCards(cards, holeCardHidden);
+        int perRow = Math.Max(1, (GetWidth() + CardRenderer.CardGap) / (CardRenderer.Width + CardRenderer.CardGap));
+
+        for (int start = 0; start < blocks.Count; start += perRow)
         {
-            Console.WriteLine(line);
+            int end = Math.Min(start + perRow, blocks.Count);
+
+            for (int line = 0; line < CardRenderer.Height; line++)
+            {
+                for (int i = start; i < end; i++)
+                {
+                    bool hidden = holeCardHidden && i == 1;
+                    Console.ForegroundColor = ColorFor(cards[i], hidden);
+                    Console.Write(blocks[i][line]);
+                    Console.ResetColor();
+                    Console.Write(new string(' ', CardRenderer.CardGap));
+                }
+                Console.WriteLine();
+            }
         }
     }
+
+    private static ConsoleColor ColorFor(Card card, bool hidden)
+    {
+        if (hidden)
+        {
+            return ConsoleColor.DarkCyan;
+        }
+
+        bool red = card.Suit == Suit.Hearts || card.Suit == Suit.Diamonds;
+        return red ? ConsoleColor.Red : ConsoleColor.Gray;
+    }
+
 
     private static int GetWidth()
     {
