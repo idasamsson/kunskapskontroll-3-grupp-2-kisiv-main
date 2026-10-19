@@ -11,18 +11,6 @@ class HiLoCounter
         RunningCount += GetCountValue(card);
     }
 
-    // Löpande räkning delad med antal kvarvarnade lekar.
-    public double TrueCount(int cardsRemaining)
-    {
-        if (cardsRemaining <= 0)
-        {
-            return RunningCount;
-        }
-
-        double decksRemaining = (double)cardsRemaining / CardsPerDeck;
-        return RunningCount / decksRemaining;
-    }
-
     // 2-6 ger +1, 7-9 ger 0, tiokort och ess ger -1.
     private static int GetCountValue(Card card)
     {
@@ -34,6 +22,17 @@ class HiLoCounter
         };
     }
 
+     // Löpande räkning delad med antal kvarvarnade lekar.
+    public double TrueCount(int cardsRemaining)
+    {
+        if (cardsRemaining <= 0)
+        {
+            return RunningCount;
+        }
+
+        double decksRemaining = (double)cardsRemaining / CardsPerDeck;
+        return RunningCount / decksRemaining;
+    }
     // Börja om fron noll. Anropas när skon blandas om.
     public void Reset()
     {
