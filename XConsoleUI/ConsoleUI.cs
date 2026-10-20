@@ -80,6 +80,11 @@ class ConsoleUI
         }
     }
 
+    public int AskBet(Player player)
+    {
+        return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
+    }
+
     public Move AskMove()
     {
         while (true)
@@ -137,9 +142,9 @@ class ConsoleUI
             index++;
         }
 
-            string value = holeCardHidden ? "?" : p.Hand.GetHandValue().ToString();
-            Console.WriteLine($"{p.Name}: {string.Join("  ", cards)}   (värde: {value})");
-        }
+        string value = holeCardHidden ? "?" : p.Hand.GetHandValue().ToString();
+        Console.WriteLine($"{p.Name}: {string.Join("  ", cards)}   (värde: {value})");
+    }
 
     public void ShowOutcome(Player p, Outcome o)
     {
