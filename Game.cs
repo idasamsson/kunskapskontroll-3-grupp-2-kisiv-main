@@ -83,14 +83,14 @@ class Game
         }
     }
 
-    // Frågar efter namn tills det är ett namn som inte reda sitter vid bordet.
+    // Frågar efter namn tills det är ett namn som inte redan sitter vid bordet.
     private void AddHumanPlayer()
     {
         while (true)
         {
             string name = ui.AskPlayerName();
 
-            if (players.Exists(p=> p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            if (players.Exists(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
                 ui.ShowMessage("Den spelaren sitter redan vid bordet. Välj ett annat namn.");
             }
