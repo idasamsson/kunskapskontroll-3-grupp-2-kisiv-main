@@ -5,7 +5,9 @@ class Player : Participant
     public int Wins;
     public int Losses;
     public int Pushes;
-    public int Chips = 200;
+
+    public const int StartingChips = 200;
+    public int Chips = StartingChips;
     public int Bet = 0;
 
     public bool PlaceBet(int bet)
