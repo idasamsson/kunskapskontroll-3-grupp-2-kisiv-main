@@ -165,8 +165,8 @@ static class Tests
             Check("Kung + Dam är inte blackjack", !MakeHand(Rank.King, Rank.Queen).IsBlackjack());
         });
 
-        // ---------- Participant / Dealer ----------
-        Console.WriteLine("\nParticipant / Dealer");
+        // ---------- Participants / Dealer ----------
+        Console.WriteLine("\nParticipants / Dealer");
         Run("IsBust", () =>
         {
             Player player = new Player { Name = "Test", Hand = MakeHand(Rank.King, Rank.Queen, Rank.Five) };
@@ -180,6 +180,53 @@ static class Tests
             Check("Dealer köper på 16", dealer.MakeMove() == Move.Hit);
             dealer.Hand = MakeHand(Rank.King, Rank.Seven);
             Check("Dealer stannar på 17", dealer.MakeMove() == Move.Stand);
+        });
+
+        // ---------- Player: marker och insats ----------
+        Console.WriteLine("\nPlayer: marker och insats");
+        Run("Ny spelare", () =>
+        {
+            Player player = new Player { Name = "Anna" };
+            Check("Ny spelare har marker", player.Chips > 0);
+            Check("Ny spelare har ingen insats", player.Bet == 0);
+        });
+        Run("PlaceBet nekas", () =>
+        {
+            Player player = new Player { Name = "Anna", Chips = 100 };
+            Check("Insats 0 nekas", !player.PlaceBet(0));
+            Check("Negativ insats nekas", !player.PlaceBet(-5));
+            Check("Insats större än markerna nekas", !player.PlaceBet(101));
+            Check("Markerna är oförändrade efter nekade insatser", player.Chips == 100);
+            Check("Insatsen är oförändrad efter nekade insatser", player.Bet == 0);
+        });
+        Run("PlaceBet godkänns", () =>
+        {
+            Player player = new Player { Name = "Anna", Chips = 100 };
+            Check("Insats 30 godkänns", player.PlaceBet(30));
+            Check("Insatsen är sparad", player.Bet == 30);
+            Check("Markerna har minskat", player.Chips == 70);
+        });
+        Run("PlaceBet alla marker", () =>
+        {
+            Player player = new Player { Name = "Anna", Chips = 100 };
+            Check("Alla marker kan satsas", player.PlaceBet(100));
+            Check("Inga marker kvar", player.Chips == 0);
+        });
+        Run("ReceivePayout", () =>
+        {
+            Player player = new Player { Name = "Anna", Chips = 100 };
+            player.PlaceBet(30);
+            player.ReceivePayout(60);
+            Check("Markerna ökar med utbetalningen", player.Chips == 130);
+            Check("Insatsen nollställs efter utbetalning", player.Bet == 0);
+        });
+        Run("ReceivePayout vid förlust", () =>
+        {
+            Player player = new Player { Name = "Anna", Chips = 100 };
+            player.PlaceBet(30);
+            player.ReceivePayout(0);
+            Check("Markerna är kvar på 70 efter förlust", player.Chips == 70);
+            Check("Insatsen nollställs även vid förlust", player.Bet == 0);
         });
 
         // ---------- GameStorage ----------
