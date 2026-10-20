@@ -26,14 +26,23 @@ class CardRenderer
     }
 
     // Baksidan har samma mått som framsidan, så att den kan stå bredvid andra kort.
+    private static readonly string[] BackPattern =
+{
+    "▒K▒▒▒K▒",
+    "▒▒I▒I▒▒",
+    "▒▒▒S▒▒▒",
+    "▒▒I▒I▒▒",
+    "▒V▒▒▒V▒"
+};
+
     public string[] RenderBack()
     {
         var rows = new string[Height];
         rows[0] = "┌" + new string('─', InnerWidth) + "┐";
 
-        for (int i = 1; i < Height - 1; i++)
+        for (int i = 0; i < BackPattern.Length; i++)
         {
-            rows[i] = "│" + new string('▒', InnerWidth) + "│";
+            rows[i + 1] = "│" + BackPattern[i] + "│";
         }
 
         rows[Height - 1] = "└" + new string('─', InnerWidth) + "┘";
@@ -75,7 +84,7 @@ class CardRenderer
 
         return lines.ToArray();
     }
-    
+
     // Lägger texten i mitten av kortet och fyller ut med mellanslag till full bredd.
     private static string Center(string text)
     {
