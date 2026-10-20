@@ -1,4 +1,4 @@
-class Deck // En kortlek med 52 kort som kan blandas och dras ifrån.
+class Deck : ICardSource // En kortlek med 52 kort som kan blandas och dras ifrån.
 {
     private List<Card> cards = new();
     private readonly Random random;
@@ -52,10 +52,10 @@ class Deck // En kortlek med 52 kort som kan blandas och dras ifrån.
         return cards.Count;
     }
     
-    public void ResetIfLow() // Ny blandad lek när färre än 15 kort är kvar.
-                            // Anropas från Game i början av varje runda.
+    public void ResetIfLow(int threshold) // Ny blandad lek när färre än threshold kort är kvar.
+                            // Anropas från Round i början av varje giv.
     {
-        if (cards.Count < 15)
+        if (cards.Count < threshold)
         {
             Reset();
         }

@@ -129,11 +129,11 @@ static class Tests
             {
                 deck.Draw();
             }
-            deck.ResetIfLow();
+            deck.ResetIfLow(15);
             Check("15 kort kvar: ingen ny lek", deck.Count() == 15);
 
             deck.Draw();
-            deck.ResetIfLow();
+            deck.ResetIfLow(15);
             Check("14 kort kvar: ny lek med 52 kort", deck.Count() == 52);
         });
 
@@ -210,6 +210,20 @@ static class Tests
             Check("Felaktiga rader hoppas över", storage.LoadPlayers().Count == 1);
 
             File.Delete(path);
+        });
+
+        // ---------- PayoutCalculator ----------
+        Console.WriteLine("\nPayoutCalculator");
+        Run("Calculate", () =>
+        {
+            Check("Insats 5 ska ge 0 vid förlust", PayoutCalculator.Calculate(Outcome.Lose, 5) == 0);
+            Check("Insats 5 ska ge 5 vid lika", PayoutCalculator.Calculate(Outcome.Push, 5) == 5);
+            Check("Insats 5 ska ge 10 vid vinst", PayoutCalculator.Calculate(Outcome.Win, 5) == 10);
+            Check("Insats 5 ska ge 13 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 5) == 13);
+            Check("Insats 10 ska ge 0 vid förlust", PayoutCalculator.Calculate(Outcome.Lose, 10) == 0);
+            Check("Insats 10 ska ge 10 vid lika", PayoutCalculator.Calculate(Outcome.Push, 10) == 10);
+            Check("Insats 10 ska ge 20 vid vinst", PayoutCalculator.Calculate(Outcome.Win, 10) == 20);
+            Check("Insats 10 ska ge 25 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 10) == 25);
         });
 
         // ---------- Summering ----------

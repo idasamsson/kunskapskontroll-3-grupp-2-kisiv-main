@@ -4,12 +4,12 @@ class Round
 {
     private const int InitialCardCount = 2;
     private const int BlackjackValue = 21;
-    private readonly Deck deck;
+    private readonly ICardSource deck;
     private readonly Dealer dealer;
     private readonly List<Player> players;
     private readonly RuleSet rules;
 
-    public Round(Deck deck, Dealer dealer, List<Player> players, RuleSet rules)
+    public Round(ICardSource deck, Dealer dealer, List<Player> players, RuleSet rules)
     {
         this.deck = deck;
         this.dealer = dealer;
@@ -19,7 +19,7 @@ class Round
 
     public void Deal()
     {
-        deck.ResetIfLow();
+        deck.ResetIfLow(rules.ReshuffleThreshold);
         foreach (Player player in players)
         {
             player.Hand.Clear();

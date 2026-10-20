@@ -1,8 +1,12 @@
-class Shoe //En sko: flera kortlekar blandade till en hög.
+// En sko: flera kortlekar blandade till en hög.
+class Shoe : ICardSource
 {
     private List<Card> cards = new();
     private readonly Random random;
     private readonly int numberOfDecks;
+    // Antal kort kvar när skiljekortet kommer fram.
+    private int cutCardPosition;
+    public bool CutCardReached { get; private set; }
 
     public Shoe(Random random, int numberOfDecks)
     {
@@ -15,8 +19,9 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         this.numberOfDecks = numberOfDecks;
         Reset();
     }
-
-    public void Reset() // Bygger en ny sko med alla lekar o blandar den.
+    
+    // Bygger en ny sko med alla lekar och blandar den.
+    public void Reset()
     {
         cards = new List<Card>();
 
@@ -27,11 +32,12 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
                 foreach (Rank rank in Enum.GetValues<Rank>())
                 {
                     cards.Add(new Card(rank, suit));
-                }         
+                }
             }
         }
-        
+
         Shuffle();
+        PlaceCutCard();
     }
 
     public int Count()
@@ -39,7 +45,8 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         return cards.Count;
     }
 
-    private void Shuffle() // Fisher-Yates: gå baklänges och byt varje kort med slumpvalt kort på plats 0..i
+    // Fisher-Yates: gå baklänges och byt varje kort med slumpvalt kort på plats 0..i
+    private void Shuffle()
     {
         for (int i = cards.Count - 1; i > 0; i--)
         {
@@ -48,15 +55,42 @@ class Shoe //En sko: flera kortlekar blandade till en hög.
         }
     }
 
+    // Lägg skiljekortet på en slumpmässig plats i den bakre fjärdedelen av skon.
+    private void PlaceCutCard()
+    {
+        int backQuarter = cards.Count / 4;
+        cutCardPosition = random.Next(1, backQuarter + 1);
+        CutCardReached = false;
+    }
+
     public Card Draw()
     {
+        // Nödfall: ska inte hända tack vare skiljekortet och tröskeln,
+        // men hellre en ny sko än att spelet kraschar mitt i en runda.
         if (cards.Count == 0)
         {
-            throw new InvalidOperationException("Skon är tom.");
+            Reset();
         }
 
         Card card = cards[^1];
         cards.RemoveAt(cards.Count - 1);
+
+        if (cards.Count <= cutCardPosition)
+        {
+            CutCardReached = true;
+        }
+
         return card;
+    }
+
+    // Blandar om skon mellan rundorna:
+    // - när skiljekortet har dragits (det vanliga), eller
+    // - när färre än threshold kort är kvar (skydd så att skon inte tar slut mitt i en runda).
+    public void ResetIfLow(int threshold)
+    {
+        if (CutCardReached || cards.Count < threshold)
+        {
+            Reset();
+        }
     }
 }
