@@ -40,6 +40,42 @@ class CardRenderer
         return rows;
     }
 
+    public const int CardGap = 1; // mellanrum mellan korten
+
+    // Ritar flera kort som egna block. ConsoleUI använder den här när den vill färga varje kort för sig.
+    public List<string[]> RenderCards(IReadOnlyList<Card> cards, bool hideSecondCard = false)
+    {
+        var blocks = new List<string[]>();
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            bool hidden = hideSecondCard && i == 1; // givarens hålkort är kort nummer två
+            blocks.Add(hidden ? RenderBack() : Render(cards[i]));
+        }
+
+        return blocks;
+    }
+
+    // Slår ihop korten bredvid varandra till färdiga rader. Bryter rad när det inte får plats.
+    public string[] RenderHand(IReadOnlyList<Card> cards, bool hideSecondCard = false, int maxWidth = 80)
+    {
+        var blocks = RenderCards(cards, hideSecondCard);
+        int perRow = Math.Max(1, (maxWidth + CardGap) / (Width + CardGap));
+        var lines = new List<string>();
+
+        for (int start = 0; start < blocks.Count; start += perRow)
+        {
+            var group = blocks.Skip(start).Take(perRow).ToList();
+
+            for (int line = 0; line < Height; line++)
+            {
+                lines.Add(string.Join(new string(' ', CardGap), group.Select(b => b[line])));
+            }
+        }
+
+        return lines.ToArray();
+    }
+    
     // Lägger texten i mitten av kortet och fyller ut med mellanslag till full bredd.
     private static string Center(string text)
     {
