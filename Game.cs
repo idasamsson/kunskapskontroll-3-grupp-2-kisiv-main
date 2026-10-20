@@ -2,6 +2,7 @@ class Game
 {
     private const int MaxPlayers = 5;
     private ICardSource deck;
+    private HiLoCounter? counter;
     private Dealer dealer;
     private List<Player> players;
     private List<Player> knownPlayers;
@@ -18,7 +19,10 @@ class Game
         // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
         if (rules.NumberOfDecks > 1)
         {
-            deck = new Shoe(random, rules.NumberOfDecks);
+            Shoe shoe = new Shoe(random, rules.NumberOfDecks);
+            counter = new HiLoCounter();
+            shoe.Reshuffled += counter.Reset;
+            deck = shoe;
         }
         else
         {
@@ -169,6 +173,11 @@ class Game
         Round round = new Round(deck, dealer, players, rules);
         round.Deal();
 
+        if (counter != null)
+        {
+            ui.ShowCount(counter.RunningCount, counter.TrueCount(deck.Count()));
+        }
+
         foreach (Player player in players)
         {
             PlayPlayerTurn(player, round);
@@ -182,6 +191,8 @@ class Game
            Outcome outcome = round.Settle(player);
            ui.ShowOutcome(player, outcome);
         }
+
+        ObserveTable(round);
     }
 
     private void PlayPlayerTurn(Player player, Round round)
@@ -193,6 +204,21 @@ class Game
         {
             round.Hit(player);
             ui.ShowHand(player);
+        }
+    }
+
+    // Visar räknaren alla kort på bordet när rundan är slut.
+    // Då är även hålkortet vänt, så räknaren ser bara sådant som spelaren också har sett.
+    private void ObserveTable(Round round)
+    {
+        if (counter == null)
+        {
+            return;
+        }
+
+        foreach (Card card in round.CardsOnTable())
+        {
+            counter.Observe(card);
         }
     }
 }
