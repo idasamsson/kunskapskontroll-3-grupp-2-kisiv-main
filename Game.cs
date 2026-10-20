@@ -113,7 +113,7 @@ class Game
         else
         {
             strategy = new BasicStrategy();
-            strategyName = "grunstrategi";
+            strategyName = "grundstrategi";
         }
 
         Player computer = new Player { Name = $"Dator {players.Count + 1} ({strategyName})" };
