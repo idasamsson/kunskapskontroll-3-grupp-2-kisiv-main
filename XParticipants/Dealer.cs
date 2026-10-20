@@ -36,7 +36,7 @@ class Dealer : Participant
     // Givarens hela tur, vänder hålkortet och drar kort
     // tills regeln säger stanna. Givaren spelar alltid färdigt.
     // Returnerar korten som drogs.
-    public List<Card> PlayTurn(Deck deck)
+    public List<Card> PlayTurn(ICardSource deck)
     {
         RevealHoleCard();
 
