@@ -2,6 +2,7 @@ using XConsoleUI;
 
 class ConsoleUI
 {
+    private readonly CardRenderer cardRenderer = new CardRenderer();
     public int ShowStartMenu()
     {
         Console.WriteLine("Välkommen till KISIV Blackjack!");
@@ -85,6 +86,7 @@ class ConsoleUI
         return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
     }
 
+
     public Move AskMove()
     {
         while (true)
@@ -130,20 +132,58 @@ class ConsoleUI
 
     public void ShowHand(Participant p)
     {
-        // The dealer's second card stays hidden until the dealer's turn
+        // Givarens andra kort är dolt tills det är givarens tur
         bool holeCardHidden = p is Dealer { IsHoleCardRevealed: false };
+        string value = holeCardHidden ? "?" : p.Hand.GetHandValue().ToString();
 
-        var cards = new List<string>();
-        int index = 0;
-        foreach (Card card in p.Hand.Cards)
+        Console.WriteLine();
+        Console.WriteLine($"{p.Name} (värde: {value})");
+
+        var cards = p.Hand.Cards.ToList();
+        var blocks = cardRenderer.RenderCards(cards, holeCardHidden);
+        int perRow = Math.Max(1, (GetWidth() + CardRenderer.CardGap) / (CardRenderer.Width + CardRenderer.CardGap));
+
+        for (int start = 0; start < blocks.Count; start += perRow)
         {
-            bool isHoleCard = holeCardHidden && index == 1;
-            cards.Add(isHoleCard ? "[dolt kort]" : card.ToString());
-            index++;
+            int end = Math.Min(start + perRow, blocks.Count);
+
+            for (int line = 0; line < CardRenderer.Height; line++)
+            {
+                for (int i = start; i < end; i++)
+                {
+                    bool hidden = holeCardHidden && i == 1;
+                    Console.ForegroundColor = ColorFor(cards[i], hidden);
+                    Console.Write(blocks[i][line]);
+                    Console.ResetColor();
+                    Console.Write(new string(' ', CardRenderer.CardGap));
+                }
+                Console.WriteLine();
+            }
+        }
+    }
+
+    private static ConsoleColor ColorFor(Card card, bool hidden)
+    {
+        if (hidden)
+        {
+            return ConsoleColor.DarkCyan;
         }
 
-        string value = holeCardHidden ? "?" : p.Hand.GetHandValue().ToString();
-        Console.WriteLine($"{p.Name}: {string.Join("  ", cards)}   (värde: {value})");
+        bool red = card.Suit == Suit.Hearts || card.Suit == Suit.Diamonds;
+        return red ? ConsoleColor.Red : ConsoleColor.Gray;
+    }
+
+
+    private static int GetWidth()
+    {
+        try
+        {
+            return Console.WindowWidth;
+        }
+        catch (IOException)
+        {
+            return 80; // utdata är omdirigerad
+        }
     }
 
     public void ShowOutcome(Player p, Outcome o)
@@ -158,5 +198,18 @@ class ConsoleUI
         };
 
         Console.WriteLine($"{p.Name} {text}");
+    }
+
+    // Visar Hi-Lo- räkningen och hur gynnsamt läget är för spelaren.
+    public void ShowCount(int runningCount, double trueCount)
+    {
+        string indicator = trueCount switch
+        {
+            >= 2 => "gynnsamt för spelaren",
+            <= -2 => "ogynnsamt för spelaren",
+            _ => "neutralt"
+        };
+
+        Console.WriteLine($"Korträkning: löpande {runningCount}, sann {trueCount:F1} ({indicator})");
     }
 }
