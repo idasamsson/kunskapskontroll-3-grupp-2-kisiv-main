@@ -95,6 +95,12 @@ class Game
             knownPlayers.Add(player);
         }
 
+        if (player.Chips == 0)
+        {
+            player.Chips = Player.StartingChips;
+            ui.ShowMessage($"{player.Name} har fått nya startmarker.");
+        }
+
         player.ReceiveMoveChooser(new HumanMoveChooser(ui));
 
         players.Add(player);
