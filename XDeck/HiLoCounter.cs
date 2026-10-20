@@ -18,11 +18,11 @@ class HiLoCounter
         {
             Rank.Two or Rank.Three or Rank.Four or Rank.Five or Rank.Six => 1,
             Rank.Seven or Rank.Eight or Rank.Nine => 0,
-            _=> -1 // Tio, knekt, dam, kung och ess
+            _ => -1 // Tio, knekt, dam, kung och ess
         };
     }
 
-    // Löpande räkning delad med antal kvar varnade lekar.
+    // Löpande räkning delad med antal kvarvarnade lekar.
     public double TrueCount(int cardsRemaining)
     {
         if (cardsRemaining <= 0)
