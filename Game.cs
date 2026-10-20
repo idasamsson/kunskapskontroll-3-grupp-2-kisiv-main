@@ -1,7 +1,7 @@
 class Game
 {
     private const int MaxPlayers = 5;
-    private Deck deck;
+    private ICardSource deck;
     private Dealer dealer;
     private List<Player> players;
     private List<Player> knownPlayers;
@@ -14,7 +14,16 @@ class Game
         this.ui = ui;
         this.storage = storage;
         this.rules = rules;
-        deck = new Deck(random);
+        
+        // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
+        if (rules.NumberOfDecks > 1)
+        {
+            deck = new Shoe(random, rules.NumberOfDecks);
+        }
+        else
+        {
+            deck = new Deck(random);
+        }
         dealer = new Dealer(rules.DealerHitsSoft17);
         players = new List<Player>();
         knownPlayers = new List<Player>();
