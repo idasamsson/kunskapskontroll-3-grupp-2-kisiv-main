@@ -5,6 +5,25 @@ class Player : Participant
     public int Wins;
     public int Losses;
     public int Pushes;
+    public int Chips = 200;
+    public int Bet = 0;
+
+    public bool PlaceBet(int bet)
+    {
+        if (bet <= 0 || bet > Chips)
+        {
+            return false;
+        }
+
+        Bet = bet;
+        Chips -= bet;
+        return true;
+    }
+    public void ReceivePayout(int payout)
+    {
+        Chips += payout;
+        Bet = 0;
+    }
 
     public void ReceiveMoveChooser(IMoveChooser moveChooser)
     {
@@ -15,6 +34,7 @@ class Player : Participant
     {
         this.dealerOpenCard = dealerOpenCard;
     }
+
 
     public override Move MakeMove()
     {
