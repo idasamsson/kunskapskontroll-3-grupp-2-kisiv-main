@@ -125,6 +125,7 @@ class Game
     private void PlayRound()
     {
         Round round = new Round(deck, dealer, players, rules);
+        AskForBets();
         round.Deal();
 
         foreach (Player player in players)
@@ -139,6 +140,15 @@ class Game
         {
            Outcome outcome = round.Settle(player);
            ui.ShowOutcome(player, outcome);
+        }
+    }
+
+    private void AskForBets()
+    {
+                foreach(Player player in players)
+        {
+            int bet = ui.AskBet(player);
+            player.PlaceBet(bet);
         }
     }
 
