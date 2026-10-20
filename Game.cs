@@ -1,3 +1,5 @@
+using System.Threading.Channels;
+
 class Game
 {
     private const int MaxPlayers = 5;
@@ -121,8 +123,17 @@ class Game
         while (playing)
         {
             PlayRound();
+            RemoveBrokePlayers();
             SaveResults();
-            playing = ui.AskPlayAgain();
+            if (players.Count == 0)
+            {
+                ui.ShowMessage("Det finns inga spelare kvar.");
+                playing = false;
+            }
+            else
+            {
+                playing = ui.AskPlayAgain();
+            }
         }
     }
 
@@ -189,4 +200,16 @@ class Game
             counter.Observe(card);
         }
     }
+    private void RemoveBrokePlayers()
+    {
+        foreach (Player player in players)
+        {
+            if (player.Chips == 0)
+            {
+                ui.ShowMessage($"{player.Name} har inga marker kvar och lämnar bordet.");
+            }
+        }
+        players.RemoveAll(p => p.Chips == 0);
+    }
+
 }
