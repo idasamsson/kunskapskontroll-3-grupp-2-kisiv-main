@@ -193,4 +193,17 @@ class ConsoleUI
 
         Console.WriteLine($"{p.Name} {text}");
     }
+
+    // Visar Hi-Lo- räkningen och hur gynnsamt läget är för spelaren.
+    public void ShowCount(int runningCount, double trueCount)
+    {
+        string indicator = trueCount switch
+        {
+            >= 2 => "gynnsamt för spelaren",
+            <= -2 => "ogynnsamt för spelaren",
+            _ => "neutralt"
+        };
+
+        Console.WriteLine($"Korträkning: löpande {runningCount}, sann {trueCount:F1} ({indicator})");
+    }
 }

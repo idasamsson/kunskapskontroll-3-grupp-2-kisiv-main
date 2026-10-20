@@ -58,6 +58,24 @@ class Round
         dealer.PlayTurn(deck);
     }
 
+    // Alla kort på bordet: spelarnas händer och givarens hand.
+    // Anropas när rundan är slut, då är även hålkortet vänt.
+    public IEnumerable<Card> CardsOnTable()
+    {
+        foreach (Player player in players)
+        {
+            foreach (Card card in player.Hand.Cards)
+            {
+                yield return card;
+            }
+        }
+
+        foreach (Card card in dealer.Hand.Cards)
+        {
+            yield return card;
+        }
+        
+    }
     public Outcome Settle(Player player)
     {
         Outcome outcome = DetermineOutcome(player);
