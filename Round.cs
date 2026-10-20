@@ -80,6 +80,8 @@ class Round
     {
         Outcome outcome = DetermineOutcome(player);
         RecordOutcome(player, outcome);
+        int payout = PayoutCalculator.Calculate(outcome, player.Bet);
+        player.ReceivePayout(payout);
         return outcome;
     }
 
