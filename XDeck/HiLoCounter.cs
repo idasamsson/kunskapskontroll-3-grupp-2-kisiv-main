@@ -22,7 +22,7 @@ class HiLoCounter
         };
     }
 
-    // Löpande räkning delad med antal kvarvarnade lekar.
+    // Löpande räkning delad med antal kvarvarande lekar.
     public double TrueCount(int cardsRemaining)
     {
         if (cardsRemaining <= 0)
