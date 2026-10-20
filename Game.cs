@@ -66,17 +66,59 @@ class Game
 
         while (players.Count < count)
         {
+            int type = ui.AskPlayerType(players.Count + 1);
+
+            if (type == 1)
+            {
+                AddHumanPlayer();
+            }
+            else
+            {
+                AddComputerPlayer(type);
+            }
+        }
+    }
+
+    // Frågar efter namn tills det är ett namn som inte reda sitter vid bordet.
+    private void AddHumanPlayer()
+    {
+        while (true)
+        {
             string name = ui.AskPlayerName();
 
-            if (players.Exists(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            if (players.Exists(p=> p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
-                ui.ShowMessage("Den spelaren ssitter redan vid bordet. Välj ett annat namn.");
+                ui.ShowMessage("Den spelaren sitter redan vid bordet. Välj ett annat namn.");
             }
             else
             {
                 AddPlayer(name);
+                return;
             }
         }
+    }
+
+    // Skapar en datorspelare och ger en strategi. 
+    // Datorspelare sparas inte till fil, läggs bara till vid bordet.
+    private void AddComputerPlayer(int type)
+    {
+        IMoveChooser strategy;
+        string strategyName;
+
+        if (type == 2)
+        {
+            strategy = new SimpleStrategy();
+            strategyName = "enkel";
+        }   
+        else
+        {
+            strategy = new BasicStrategy();
+            strategyName = "grunstrategi";
+        }
+
+        Player computer = new Player { Name = $"Dator {players.Count + 1} ({strategyName})" };
+        computer.ReceiveMoveChooser(strategy);
+        players.Add(computer);
     }
 
     private void AddPlayer(string name)
