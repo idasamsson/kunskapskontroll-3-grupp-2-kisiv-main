@@ -10,6 +10,8 @@ class Player : Participant
     public int Chips = StartingChips;
     public int Bet = 0;
 
+    public PlayerType Type = PlayerType.Human;
+
     public bool PlaceBet(int bet)
     {
         if (bet <= 0 || bet > Chips)
