@@ -265,7 +265,7 @@ static class Tests
                 oldFormat.Count == 1 && oldFormat[0].Chips == Player.StartingChips);
 
             // Trasiga rader ska hoppas över
-            File.WriteAllLines(path, ["Anna;3;1;2;80", "trasig rad", ";1;1;1;50", "Cecilia;x;1;1", "Dan;1;1;1;abc", "Eva;1;1;1;50;7"]);
+            File.WriteAllLines(path, ["Anna;3;1;2;80", "trasig rad", ";1;1;1;50", "Cecilia;x;1;1", "Dan;1;1;1;abc", "Eva;1;1;1;50;7", "Bertil;2;1;0;-50", ]);
             List<Player> mixed = storage.LoadPlayers();
             Check("Felaktiga rader hoppas över", mixed.Count == 1);
             Check("Giltig ny rad behåller sina marker",

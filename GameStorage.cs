@@ -70,7 +70,7 @@ class GameStorage
 
         if (parts.Length == 5)
         {
-            if(!int.TryParse(parts[4], out chips))
+            if (!int.TryParse(parts[4], out chips) || chips < 0)
             {
                 return null;
             }
