@@ -76,7 +76,5 @@ class GameStorage
             }
         }
         return new Player { Name = name, Wins = wins, Losses = losses, Pushes = pushes, Chips = chips};
-        /* När Sandra lägger till Player(string name) ändra till 
-        return new Player(name) { Wins = wins, Losses = losses, Pushes = pushes };*/
     }
 }
