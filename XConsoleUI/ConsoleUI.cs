@@ -81,6 +81,18 @@ class ConsoleUI
         }
     }
 
+    // Frågar vem som ska sitta på en plats vid bordet
+    // 1 = människa, 2 = dator med enkel strategi, 3 = dator med grundstrategi
+    public int AskPlayerType(int seat)
+    {
+        Console.WriteLine();
+        Console.WriteLine($"Plats {seat}:");
+        Console.WriteLine("1. Människa");
+        Console.WriteLine("2. Dator (enkel strategi)");
+        Console.WriteLine("3. Dator (grundstrategi)");
+        return ConsoleInput.ReadInt("Välj (1-3): ", 1, 3);
+    }
+
     public int AskBet(Player player)
     {
         return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);

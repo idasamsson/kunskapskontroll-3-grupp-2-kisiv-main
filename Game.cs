@@ -72,17 +72,60 @@ class Game
 
         while (players.Count < count)
         {
+            int type = ui.AskPlayerType(players.Count + 1);
+
+            if (type == 1)
+            {
+                AddHumanPlayer();
+            }
+            else
+            {
+                AddComputerPlayer(type);
+            }
+        }
+    }
+
+    // Frågar efter namn tills det är ett namn som inte redan sitter vid bordet.
+    private void AddHumanPlayer()
+    {
+        while (true)
+        {
             string name = ui.AskPlayerName();
 
             if (players.Exists(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
-                ui.ShowMessage("Den spelaren ssitter redan vid bordet. Välj ett annat namn.");
+                ui.ShowMessage("Den spelaren sitter redan vid bordet. Välj ett annat namn.");
             }
             else
             {
                 AddPlayer(name);
+                return;
             }
         }
+    }
+
+    // Skapar en datorspelare och ger en strategi. 
+    // Datorspelare sparas inte till fil, läggs bara till vid bordet.
+    private void AddComputerPlayer(int type)
+    {
+        IMoveChooser strategy;
+        string strategyName;
+
+        if (type == 2)
+        {
+            strategy = new SimpleStrategy();
+            strategyName = "enkel";
+        }   
+        else
+        {
+            strategy = new BasicStrategy();
+            strategyName = "grundstrategi";
+        }
+
+        Player computer = new Player { Name = $"Dator {players.Count + 1} ({strategyName})" };
+        computer.Type = PlayerType.Computer;
+        computer.ReceiveMoveChooser(strategy);
+        players.Add(computer);
     }
 
     private void AddPlayer(string name)
@@ -171,13 +214,34 @@ class Game
         ObserveTable(round);
     }
 
+   // Datorer satsar alltid samma belopp.
+    private const int ComputerBetSize = 10;
+
     private void AskForBets()
     {
-                foreach(Player player in players)
+        foreach (Player player in players)
         {
-            int bet = ui.AskBet(player);
+            int bet;
+
+            if (player.Type == PlayerType.Computer)
+            {
+                bet = GetComputerBet(player);
+                ui.ShowMessage($"{player.Name} satsar {bet}.");
+            }
+            else
+            {
+                bet = ui.AskBet(player);
+            }
+
             player.PlaceBet(bet);
         }
+    }
+
+    // Datorn satsar ett fast belopp, men aldrig mer än den har.
+    // Har den 6 marker kvar blir Math.Min(10, 6) = 6.
+    private int GetComputerBet(Player player)
+    {
+        return Math.Min(ComputerBetSize, player.Chips);
     }
 
     private void PlayPlayerTurn(Player player, Round round)
