@@ -81,6 +81,12 @@ class ConsoleUI
         }
     }
 
+    public int AskBet(Player player)
+    {
+        return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
+    }
+
+
     public Move AskMove()
     {
         while (true)

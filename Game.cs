@@ -1,3 +1,5 @@
+using System.Threading.Channels;
+
 class Game
 {
     private const int MaxPlayers = 5;
@@ -93,6 +95,12 @@ class Game
             knownPlayers.Add(player);
         }
 
+        if (player.Chips == 0)
+        {
+            player.Chips = Player.StartingChips;
+            ui.ShowMessage($"{player.Name} har fått nya startmarker.");
+        }
+
         player.ReceiveMoveChooser(new HumanMoveChooser(ui));
 
         players.Add(player);
@@ -121,14 +129,24 @@ class Game
         while (playing)
         {
             PlayRound();
+            RemoveBrokePlayers();
             SaveResults();
-            playing = ui.AskPlayAgain();
+            if (players.Count == 0)
+            {
+                ui.ShowMessage("Det finns inga spelare kvar.");
+                playing = false;
+            }
+            else
+            {
+                playing = ui.AskPlayAgain();
+            }
         }
     }
 
     private void PlayRound()
     {
         Round round = new Round(deck, dealer, players, rules);
+        AskForBets();
         round.Deal();
 
         if (counter != null)
@@ -151,6 +169,15 @@ class Game
         }
 
         ObserveTable(round);
+    }
+
+    private void AskForBets()
+    {
+                foreach(Player player in players)
+        {
+            int bet = ui.AskBet(player);
+            player.PlaceBet(bet);
+        }
     }
 
     private void PlayPlayerTurn(Player player, Round round)
@@ -179,4 +206,16 @@ class Game
             counter.Observe(card);
         }
     }
+    private void RemoveBrokePlayers()
+    {
+        foreach (Player player in players)
+        {
+            if (player.Chips == 0)
+            {
+                ui.ShowMessage($"{player.Name} har inga marker kvar och lämnar bordet.");
+            }
+        }
+        players.RemoveAll(p => p.Chips == 0);
+    }
+
 }
