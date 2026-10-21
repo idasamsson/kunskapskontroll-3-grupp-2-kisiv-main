@@ -93,6 +93,12 @@ class ConsoleUI
         return ConsoleInput.ReadInt("Välj (1-3): ", 1, 3);
     }
 
+    public int AskBet(Player player)
+    {
+        return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
+    }
+
+
     public Move AskMove()
     {
         while (true)
