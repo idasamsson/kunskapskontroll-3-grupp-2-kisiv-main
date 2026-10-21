@@ -14,7 +14,7 @@ class GameStorage
         
         foreach (Player player in players)
         {
-            string line = string.Join(Separator, player.Name, player.Wins, player.Losses, player.Pushes);
+            string line = string.Join(Separator, player.Name, player.Wins, player.Losses, player.Pushes, player.Chips);
             lines.Add(line);
         }
 
@@ -45,9 +45,11 @@ class GameStorage
 
     private Player? ParseLine(string line)
     {
+        int chips = Player.StartingChips;
+
         string[] parts = line.Split(Separator);
 
-        if (parts.Length != 4)
+        if (parts.Length != 4 && parts.Length != 5)
         {
             return null;
         }
@@ -65,7 +67,15 @@ class GameStorage
         {
             return null;
         }
-        return new Player { Name = name, Wins = wins, Losses = losses, Pushes = pushes};
+
+        if (parts.Length == 5)
+        {
+            if(!int.TryParse(parts[4], out chips))
+            {
+                return null;
+            }
+        }
+        return new Player { Name = name, Wins = wins, Losses = losses, Pushes = pushes, Chips = chips};
         /* När Sandra lägger till Player(string name) ändra till 
         return new Player(name) { Wins = wins, Losses = losses, Pushes = pushes };*/
     }
