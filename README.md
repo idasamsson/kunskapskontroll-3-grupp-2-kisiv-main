@@ -46,7 +46,6 @@ Saknas filen används standardreglerna, och programmet säger till. En felstavad
 ## Kända brister
 - Med en lek och `ReshuffleThreshold` på 52 eller mer blandas leken om varje runda.
 - En runda med många spelare kan i sällsynta fall använda fler än 15 kort. Då byggs en ny lek mitt i rundan, och samma kort kan finnas två gånger på bordet.
-- `NumberOfDecks` används först när skon (`Shoe`) är inkopplad i spelet.
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
 
