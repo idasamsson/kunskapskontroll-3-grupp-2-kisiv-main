@@ -123,6 +123,7 @@ class Game
         }
 
         Player computer = new Player { Name = $"Dator {players.Count + 1} ({strategyName})" };
+        computer.Type = PlayerType.Computer;
         computer.ReceiveMoveChooser(strategy);
         players.Add(computer);
     }
@@ -213,13 +214,34 @@ class Game
         ObserveTable(round);
     }
 
+   // Datorer satsar alltid samma belopp.
+    private const int ComputerBetSize = 10;
+
     private void AskForBets()
     {
-                foreach(Player player in players)
+        foreach (Player player in players)
         {
-            int bet = ui.AskBet(player);
+            int bet;
+
+            if (player.Type == PlayerType.Computer)
+            {
+                bet = GetComputerBet(player);
+                ui.ShowMessage($"{player.Name} satsar {bet}.");
+            }
+            else
+            {
+                bet = ui.AskBet(player);
+            }
+
             player.PlaceBet(bet);
         }
+    }
+
+    // Datorn satsar ett fast belopp, men aldrig mer än den har.
+    // Har den 6 marker kvar blir Math.Min(10, 6) = 6.
+    private int GetComputerBet(Player player)
+    {
+        return Math.Min(ComputerBetSize, player.Chips);
     }
 
     private void PlayPlayerTurn(Player player, Round round)
