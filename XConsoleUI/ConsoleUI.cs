@@ -44,11 +44,11 @@ class ConsoleUI
     {
         Console.WriteLine();
         Console.WriteLine("--- Resultat ---");
-        Console.WriteLine($"{"Spelare",-20} {"Vunna",6} {"Förlorade",10} {"Lika",6}");
+        Console.WriteLine($"{"Spelare",-20} {"Vunna",6} {"Förlorade",10} {"Lika",6} {"Marker",10}");
 
         foreach (Player p in players)
         {
-            Console.WriteLine($"{p.Name,-20} {p.Wins,6} {p.Losses,10} {p.Pushes,6}");
+            Console.WriteLine($"{p.Name,-20} {p.Wins,6} {p.Losses,10} {p.Pushes,6} {p.Chips,10}");
         }
     }
 
