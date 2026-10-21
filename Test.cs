@@ -240,10 +240,10 @@ static class Tests
             Check("Saknad fil ger tom lista", storage.LoadPlayers().Count == 0);
 
             List<Player> players = new List<Player>
-            {
-                new Player { Name = "Anna", Wins = 3, Losses = 1, Pushes = 2 },
-                new Player { Name = "Bertil", Wins = 0, Losses = 5, Pushes = 0 },
-            };
+                {
+                    new Player { Name = "Anna", Wins = 3, Losses = 1, Pushes = 2, Chips = 150 },
+                    new Player { Name = "Bertil", Wins = 0, Losses = 5, Pushes = 0, Chips = 40 },
+                };
             storage.SavePlayers(players);
             List<Player> loaded = storage.LoadPlayers();
 
@@ -252,9 +252,24 @@ static class Tests
                 loaded.Count == 2 &&
                 loaded[0].Name == "Anna" && loaded[0].Wins == 3 && loaded[0].Losses == 1 && loaded[0].Pushes == 2 &&
                 loaded[1].Name == "Bertil" && loaded[1].Losses == 5);
+            Check("Marker sparas och laddas",
+                loaded.Count == 2 &&
+                loaded[0].Chips == 150 &&
+                loaded[1].Chips == 40);
 
-            File.WriteAllLines(path, ["Anna;3;1;2", "trasig rad", ";1;1;1", "Cecilia;x;1;1"]);
-            Check("Felaktiga rader hoppas över", storage.LoadPlayers().Count == 1);
+        // Gammalt filformat utan marker ska fortfarande gå att läsa
+            File.WriteAllLines(path, ["Anna;3;1;2"]);
+            List<Player> oldFormat = storage.LoadPlayers();
+            Check("Gammal rad (4 fält) laddas", oldFormat.Count == 1);
+            Check("Gammal rad får startmarker",
+                oldFormat.Count == 1 && oldFormat[0].Chips == Player.StartingChips);
+
+            // Trasiga rader ska hoppas över
+            File.WriteAllLines(path, ["Anna;3;1;2;80", "trasig rad", ";1;1;1;50", "Cecilia;x;1;1", "Dan;1;1;1;abc", "Eva;1;1;1;50;7"]);
+            List<Player> mixed = storage.LoadPlayers();
+            Check("Felaktiga rader hoppas över", mixed.Count == 1);
+            Check("Giltig ny rad behåller sina marker",
+                mixed.Count == 1 && mixed[0].Chips == 80);
 
             File.Delete(path);
         });
