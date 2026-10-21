@@ -1,5 +1,3 @@
-using System.Threading.Channels;
-
 class Game
 {
     private const int MaxPlayers = 5;
