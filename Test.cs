@@ -273,6 +273,38 @@ static class Tests
             Check("Insats 10 ska ge 25 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 10) == 25);
         });
 
+                // ---------- RuleSetLoader ----------
+        Console.WriteLine("\nRuleSetLoader");
+        Run("Läsa husregler", () =>
+        {
+            string path = Path.Combine(Path.GetTempPath(), "blackjack_testbed_rules.txt");
+
+            File.Delete(path);
+            RuleSetLoader missingLoader = new RuleSetLoader(path);
+            RuleSet defaults = missingLoader.Load();
+            Check("Saknad fil ger standardregler",
+                !defaults.DealerHitsSoft17 && defaults.NumberOfDecks == 1 &&
+                defaults.ReshuffleThreshold == 15 && defaults.NaturalBeatsThreeCard21);
+            Check("Saknad fil ger en varning", missingLoader.Warnings.Count == 1);
+
+            File.WriteAllLines(path, ["DealerHitsSoft17=True", "NumberOfDecks=6", "ReshuffleThreshold=20", "NaturalBeatsThreeCard21=false"]);
+            RuleSetLoader validLoader = new RuleSetLoader(path);
+            RuleSet rules = validLoader.Load();
+            Check("Giltiga värden läses in",
+                rules.DealerHitsSoft17 && rules.NumberOfDecks == 6 &&
+                rules.ReshuffleThreshold == 20 && !rules.NaturalBeatsThreeCard21);
+            Check("Giltig fil ger inga varningar", validLoader.Warnings.Count == 0);
+
+            File.WriteAllLines(path, ["NumberOfDecks=abc", "ReshuffleThreshold=5", "Decks=2", "bara text"]);
+            RuleSetLoader invalidLoader = new RuleSetLoader(path);
+            RuleSet fallback = invalidLoader.Load();
+            Check("Ogiltigt antal lekar ger standardvärdet", fallback.NumberOfDecks == 1);
+            Check("Gräns under 15 ger standardvärdet", fallback.ReshuffleThreshold == 15);
+            Check("Fyra fel ger fyra varningar", invalidLoader.Warnings.Count == 4);
+
+            File.Delete(path);
+        });
+
         // ---------- Summering ----------
         Console.WriteLine($"\nResultat: {passed} OK, {failed} FEL, {notDone} EJ KLARA");
     }
