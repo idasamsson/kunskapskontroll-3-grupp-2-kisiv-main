@@ -264,7 +264,14 @@ class Game
             round.Hit(player);
             ui.ShowHand(player);
         }
+
+        // Visa hur datorns tur slutade, eftersom ingen människa svarade.
+        if (player.Type == PlayerType.Computer && !player.Hand.IsBust())
+        {
+            ui.ShowMessage($"{player.Name} stannar på {player.Hand.GetHandValue()}.");
+        }
     }
+    
 
     // Visar räknaren alla kort på bordet när rundan är slut.
     // Då är även hålkortet vänt, så räknaren ser bara sådant som spelaren också har sett.
