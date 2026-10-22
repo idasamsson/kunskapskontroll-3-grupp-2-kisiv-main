@@ -288,6 +288,24 @@ static class Tests
             Check("Insats 10 ska ge 25 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 10) == 25);
         });
 
+                Run("CalculateInsurancePayout", () =>
+        {
+            Check("Försäkring 5 ska ge 15 när givaren har blackjack", PayoutCalculator.CalculateInsurancePayout(5, true) == 15);
+            Check("Försäkring 5 ska ge 0 när givaren inte har blackjack", PayoutCalculator.CalculateInsurancePayout(5, false) == 0);
+            Check("Försäkring 3 ska ge 9 när givaren har blackjack", PayoutCalculator.CalculateInsurancePayout(3, true) == 9);
+
+            bool thrown = false;
+            try
+            {
+                PayoutCalculator.CalculateInsurancePayout(0, true);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                thrown = true;
+            }
+            Check("Försäkring 0 ska ge ArgumentOutOfRangeException", thrown);
+        });
+
                 // ---------- RuleSetLoader ----------
         Console.WriteLine("\nRuleSetLoader");
         Run("Läsa husregler", () =>
