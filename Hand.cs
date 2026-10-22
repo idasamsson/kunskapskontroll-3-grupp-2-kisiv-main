@@ -1,5 +1,3 @@
-using System.IO.Pipelines;
-
 class Hand
 {
     private List<Card> cards = new List<Card>();
@@ -7,7 +5,7 @@ class Hand
 
     private const int BlackjackValue = 21;
     
-    //“Ess räknas som 11, men kan räknas som 1. Skillnaden är 10.”
+    // Ess räknas som 11, men kan räknas som 1. Skillnaden är 10.
     private const int AceReduction = 10;
     public void AddCard(Card card)
     {
