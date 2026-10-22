@@ -54,7 +54,7 @@ class Game
                     ui.ShowRules();
                     break;
                 case 3:
-                    ui.ShowResults(knownPlayers);
+                    ui.ShowResults(knownPlayers.OrderByDescending(p => p.Chips).ToList());
                     break;
                 case 4:
                     SaveResults();
