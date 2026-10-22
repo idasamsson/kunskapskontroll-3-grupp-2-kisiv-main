@@ -319,7 +319,7 @@ class Game
 
     private void OfferInsurance()
     {
-        if (dealer.Hand.Cards[0].Rank != Rank.Ace)
+        if (dealer.UpCard.Rank != Rank.Ace)
         {
             return;
         }

@@ -33,7 +33,7 @@ class Round
             dealer.Hand.AddCard(deck.Draw());
         }
 
-        Card dealerOpenCard = dealer.Hand.Cards[0];
+        Card dealerOpenCard = dealer.UpCard;
 
         foreach (Player player in players)
         {
