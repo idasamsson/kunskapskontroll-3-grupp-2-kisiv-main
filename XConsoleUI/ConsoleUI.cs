@@ -95,6 +95,12 @@ class ConsoleUI
 
     public int AskBet(Player player)
     {
+        // Ska inte kunna hända: spelare utan marker tas bort av RemoveBrokePlayers.
+        if (player.Chips <= 0)
+        {
+            throw new InvalidOperationException ($"{player.Name} har {player.Chips} marker och kan inte satsa." +
+            "AskBet förutsätter att spelaren har minst 1 marker. Kontrollera RemoveBrokePlayers.");
+        }
         return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
     }
 

@@ -1,5 +1,3 @@
-using System.Threading.Channels;
-
 class Round
 {
     private const int InitialCardCount = 2;

@@ -1,5 +1,3 @@
-using System.Threading.Channels;
-
 class Game
 {
     private const int MaxPlayers = 5;
@@ -233,7 +231,14 @@ class Game
                 bet = ui.AskBet(player);
             }
 
-            player.PlaceBet(bet);
+            // Ska inte kunna hända: ReadInt och Math.Min håller insatsen mellan 1 och spelarens marker.
+            // Händer det ändå har ett antagande ändrats, till exempel att spelare utan marker tas bort.
+            if (!player.PlaceBet(bet))
+            {
+                throw new InvalidOperationException(
+                    $"{player.Name} kunde inte satsa {bet} med {player.Chips} marker. " +
+                    "AskForBets förutsätter att insatsen är giltig. Kontrollera RemoveBrokePlayers och hur insatsen tas fram.");
+            }
         }
     }
 
