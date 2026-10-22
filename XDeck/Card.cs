@@ -26,8 +26,7 @@ public class Card
 
     // Gör om kortet till läsbar svensk text, t.ex. "Spader Ess". Anropas automatiskt när kortet skrivs ut, 
     // t.ex. med Console.WriteLine(card).
-    public override string ToString()
-                                    
+    public override string ToString()                               
     {
         string suit = Suit switch // Översätt färgen till svenska.
         {
