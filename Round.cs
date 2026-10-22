@@ -80,6 +80,13 @@ class Round
         RecordOutcome(player, outcome);
         int payout = PayoutCalculator.Calculate(outcome, player.Bet);
         player.ReceivePayout(payout);
+
+        if (player.InsuranceBet > 0)
+        {
+            int insurancePayout = PayoutCalculator.CalculateInsurancePayout(player.InsuranceBet, dealer.Hand.IsBlackjack());
+            player.ReceiveInsurancePayout(insurancePayout);
+        }
+
         return outcome;
     }
 
