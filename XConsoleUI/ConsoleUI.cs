@@ -40,15 +40,31 @@ class ConsoleUI
         Console.WriteLine();
     }
 
-    public void ShowResults(List<Player> players)
+    // Visar spelarna sorterade efter marker. Som standard de fem främsta.
+    public void ShowResults(List<Player> players, int maxRows = 5)
     {
         Console.WriteLine();
-        Console.WriteLine("--- Resultat ---");
-        Console.WriteLine($"{"Spelare",-20} {"Vunna",6} {"Förlorade",10} {"Lika",6}");
+        Console.WriteLine($"--- Resultat (topp {maxRows} efter marker) ---");
 
-        foreach (Player p in players)
+        if (players.Count == 0)
         {
-            Console.WriteLine($"{p.Name,-20} {p.Wins,6} {p.Losses,10} {p.Pushes,6}");
+            Console.WriteLine("Inga resultat än.");
+            return;
+        }
+
+        Console.WriteLine($"{"#",3} {"Spelare",-20} {"Marker",8} {"Vunna",6} {"Förlorade",10} {"Lika",6}");
+
+        var ranked = players
+            .OrderByDescending(p => p.Chips)
+            .ThenByDescending(p => p.Wins)
+            .ThenBy(p => p.Name)
+            .Take(maxRows)
+            .ToList();
+
+        for (int i = 0; i < ranked.Count; i++)
+        {
+            Player p = ranked[i];
+            Console.WriteLine($"{i + 1,3} {p.Name,-20} {p.Chips,8} {p.Wins,6} {p.Losses,10} {p.Pushes,6}");
         }
     }
 
