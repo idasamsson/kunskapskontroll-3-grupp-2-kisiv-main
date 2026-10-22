@@ -10,6 +10,7 @@ class Player : Participant
     public int Chips = StartingChips;
     public int Bet = 0;
     public int InsuranceBet = 0;
+    public int InsuranceAmount => Bet / 2;
 
     public PlayerType Type = PlayerType.Human;
 
@@ -25,15 +26,13 @@ class Player : Participant
         return true;
     }
 
-     public bool PlaceInsuranceBet()
+    public bool PlaceInsuranceBet()
     {
-        int insuranceBet = Bet / 2;
-
-        if (insuranceBet <= 0 || insuranceBet > Chips || InsuranceBet > 0)
+        if (InsuranceAmount <= 0 || InsuranceAmount > Chips || InsuranceBet > 0)
         {
             return false;
         }
-        InsuranceBet = insuranceBet;
+        InsuranceBet = InsuranceAmount;
         Chips -= InsuranceBet;
         return true;
     }
@@ -49,6 +48,7 @@ class Player : Participant
         Chips += payout;
         InsuranceBet = 0;
     }
+    
     public void ReceiveMoveChooser(IMoveChooser moveChooser)
     {
         this.moveChooser = moveChooser;
