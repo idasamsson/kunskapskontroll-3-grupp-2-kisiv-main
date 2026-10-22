@@ -66,7 +66,7 @@ class Game
     {
         players.Clear();
 
-        int count = ui.AskPlayerCount();
+        int count = ui.AskPlayerCount(MaxPlayers);
 
         while (players.Count < count)
         {
