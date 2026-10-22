@@ -212,6 +212,26 @@ static class Tests
             Check("Alla marker kan satsas", player.PlaceBet(100));
             Check("Inga marker kvar", player.Chips == 0);
         });
+        
+        Run("PlaceInsuranceBet", () =>
+        {
+            Player player = new Player { Name = "Anna", Chips = 100, Bet = 10 };
+            Check("Första försäkringen godkänns", player.PlaceInsuranceBet() == true);
+            Check("Andra försäkringen i samma runda nekas", player.PlaceInsuranceBet() == false);
+            Check("Marker dras bara en gång", player.Chips == 95);
+        });
+
+        Run("PlaceInsuranceBet nekas", () =>
+        {
+            Player lowBet = new Player { Name = "Anna", Chips = 100, Bet = 1 };
+            Check("Insats 1 ger ingen försäkring", lowBet.PlaceInsuranceBet() == false);
+            Check("Markerna är oförändrade vid nekad försäkring", lowBet.Chips == 100);
+
+            Player fewChips = new Player { Name = "Bertil", Chips = 4, Bet = 10 };
+            Check("Försäkring över markerna nekas", fewChips.PlaceInsuranceBet() == false);
+            Check("Markerna är oförändrade när markerna inte räcker", fewChips.Chips == 4);
+        });
+
         Run("ReceivePayout", () =>
         {
             Player player = new Player { Name = "Anna", Chips = 100 };
@@ -227,6 +247,15 @@ static class Tests
             player.ReceivePayout(0);
             Check("Markerna är kvar på 70 efter förlust", player.Chips == 70);
             Check("Insatsen nollställs även vid förlust", player.Bet == 0);
+        });
+
+        Run("ReceiveInsurancePayout", () =>
+        {
+            Player player = new Player { Name = "Anna", Chips = 100, Bet = 10 };
+            player.PlaceInsuranceBet();
+            player.ReceiveInsurancePayout(15);
+            Check("Utbetalningen läggs på markerna", player.Chips == 110);
+            Check("Försäkringsinsatsen nollställs", player.InsuranceBet == 0);
         });
 
         // ---------- GameStorage ----------
@@ -288,7 +317,7 @@ static class Tests
             Check("Insats 10 ska ge 25 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 10) == 25);
         });
 
-                Run("CalculateInsurancePayout", () =>
+        Run("CalculateInsurancePayout", () =>
         {
             Check("Försäkring 5 ska ge 15 när givaren har blackjack", PayoutCalculator.CalculateInsurancePayout(5, true) == 15);
             Check("Försäkring 5 ska ge 0 när givaren inte har blackjack", PayoutCalculator.CalculateInsurancePayout(5, false) == 0);
