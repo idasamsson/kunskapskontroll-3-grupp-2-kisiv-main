@@ -11,11 +11,16 @@ Starta med `dotnet run` i projektmappen.
 ## Vem som gjort vad
 
 ### Kim
+
 - **Grund:** `Game` (meny, spelare och spelloop), `Round` (en giv: utdelning, köpregel, givarens tur och avgörande), `GameStorage` (sparar och läser `players.txt`) och `Outcome`.
+
 - **Tillval 3, husregler från konfigurationsfil:** `RuleSet` och `RuleSetLoader` i `XRules/`.
 
 ### Ida
-*(fylls i av Ida)*
+
+- **Grund:** `Hand` (håller varje spelares kort, inklusive givarens; räknar ut värdet, mjuk hand, spräckt hand och naturlig 21), `IMoveChooser` (gränssnitt som används vid val av drag, tar in spelarens hand och givarens öppna kort), `HumanMoveChooser` (skickar frågan om drag till den mänskliga spelaren), `Player` (håller spelarens namn, statistik och marker; frågar sin beslutsfattare när det är dags att välja drag).
+
+- **Tillval 4, satsningar och marker:** `PayoutCalculator` (räknar ut utbetalningen utifrån utgången i spelet), `Player.PlaceBet` (drar insatsen från markerna, nekas om den är 0 eller överstiger spelarens marker), `Player.ReceivePayout` (ger spelaren utbetalningen efter rundan), `ConsoleUI.AskBet` (frågar den mänskliga spelaren hur mycket hen vill satsa), `Game.AskForBets` (frågar spelarna om deras insatser inför varje runda), `Game.RemoveBrokePlayers` (tar bort spelare utan marker innan nästa runda), `Round.Settle` (utökad från Kim; räknar ut utbetalningen med `PayoutCalculator` och ger den till spelaren), `GameStorage` (utökad från Kim; sparar och läser marker i `players.txt`).
 
 ### Sandra
 *(fylls i av Sandra)*
@@ -33,8 +38,11 @@ Starta med `dotnet run` i projektmappen.
 Spelet följer reglerna i uppgiften, med följande tillägg:
 
 - Spelarnamn får inte vara tomma, längre än 20 tecken eller innehålla semikolon (;), eftersom sparfilen använder semikolon som avgränsare.
+- Naturlig tjugoett betalar 3:2. Vinsten avrundas uppåt när insatsen är udda. En insats på 5 marker ger vinst 7,5, som blir 8.
+- En sparad spelare med 0 marker tilldelas nya startmarker (200, `Player.StartingChips`) när hen sätter sig vid bordet.
 
 ### Husregler (`rules.txt`)
+
 Reglerna kan ändras i `rules.txt` utan att programmet byggs om. Filen läses när programmet startar.
 
 | Inställning | Standard | Betyder |
@@ -47,10 +55,12 @@ Reglerna kan ändras i `rules.txt` utan att programmet byggs om. Filen läses n�
 Saknas filen används standardreglerna, och programmet säger till. En felstavad regel, en trasig rad eller ett ogiltigt värde (till exempel `NumberOfDecks=0`) ger en varning, och standardvärdet används för just den regeln. `ReshuffleThreshold` måste vara minst 15, så att korten inte tar slut mitt i en runda.
 
 ## Kända brister
+
 - Med en lek och `ReshuffleThreshold` på 52 eller mer blandas leken om varje runda.
 - En runda med många spelare kan i sällsynta fall använda fler kort än som finns kvar, med en lek eller när skiljekortet ligger nära slutet av skon. Då byggs en ny lek eller sko mitt i rundan istället för att spelet kraschar, och samma kort kan finnas två gånger på bordet. Gränsen på 15 kort minskar risken men tar inte bort den.
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
+- `Player.Chips` är ett publikt fält, så andra klasser kan ändra markerna direkt, till exempel `Game.AddPlayer` när en spelare får nya startmarker.
 - Om det händer med skon nollställs korträknaren mitt i rundan.
 - Korträkningen uppdateras mellan rundorna, inte för varje kort som visas.
 

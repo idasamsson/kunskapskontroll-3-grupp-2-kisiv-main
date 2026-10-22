@@ -240,10 +240,10 @@ static class Tests
             Check("Saknad fil ger tom lista", storage.LoadPlayers().Count == 0);
 
             List<Player> players = new List<Player>
-            {
-                new Player { Name = "Anna", Wins = 3, Losses = 1, Pushes = 2 },
-                new Player { Name = "Bertil", Wins = 0, Losses = 5, Pushes = 0 },
-            };
+                {
+                    new Player { Name = "Anna", Wins = 3, Losses = 1, Pushes = 2, Chips = 150 },
+                    new Player { Name = "Bertil", Wins = 0, Losses = 5, Pushes = 0, Chips = 40 },
+                };
             storage.SavePlayers(players);
             List<Player> loaded = storage.LoadPlayers();
 
@@ -252,9 +252,24 @@ static class Tests
                 loaded.Count == 2 &&
                 loaded[0].Name == "Anna" && loaded[0].Wins == 3 && loaded[0].Losses == 1 && loaded[0].Pushes == 2 &&
                 loaded[1].Name == "Bertil" && loaded[1].Losses == 5);
+            Check("Marker sparas och laddas",
+                loaded.Count == 2 &&
+                loaded[0].Chips == 150 &&
+                loaded[1].Chips == 40);
 
-            File.WriteAllLines(path, ["Anna;3;1;2", "trasig rad", ";1;1;1", "Cecilia;x;1;1"]);
-            Check("Felaktiga rader hoppas över", storage.LoadPlayers().Count == 1);
+        // Gammalt filformat utan marker ska fortfarande gå att läsa
+            File.WriteAllLines(path, ["Anna;3;1;2"]);
+            List<Player> oldFormat = storage.LoadPlayers();
+            Check("Gammal rad (4 fält) laddas", oldFormat.Count == 1);
+            Check("Gammal rad får startmarker",
+                oldFormat.Count == 1 && oldFormat[0].Chips == Player.StartingChips);
+
+            // Trasiga rader ska hoppas över
+            File.WriteAllLines(path, ["Anna;3;1;2;80", "trasig rad", ";1;1;1;50", "Cecilia;x;1;1", "Dan;1;1;1;abc", "Eva;1;1;1;50;7", "Bertil;2;1;0;-50", ]);
+            List<Player> mixed = storage.LoadPlayers();
+            Check("Felaktiga rader hoppas över", mixed.Count == 1);
+            Check("Giltig ny rad behåller sina marker",
+                mixed.Count == 1 && mixed[0].Chips == 80);
 
             File.Delete(path);
         });
@@ -271,6 +286,143 @@ static class Tests
             Check("Insats 10 ska ge 10 vid lika", PayoutCalculator.Calculate(Outcome.Push, 10) == 10);
             Check("Insats 10 ska ge 20 vid vinst", PayoutCalculator.Calculate(Outcome.Win, 10) == 20);
             Check("Insats 10 ska ge 25 vid blackjack", PayoutCalculator.Calculate(Outcome.Blackjack, 10) == 25);
+        });
+
+                // ---------- RuleSetLoader ----------
+        Console.WriteLine("\nRuleSetLoader");
+        Run("Läsa husregler", () =>
+        {
+            string path = Path.Combine(Path.GetTempPath(), "blackjack_testbed_rules.txt");
+
+            File.Delete(path);
+            RuleSetLoader missingLoader = new RuleSetLoader(path);
+            RuleSet defaults = missingLoader.Load();
+            Check("Saknad fil ger standardregler",
+                !defaults.DealerHitsSoft17 && defaults.NumberOfDecks == 1 &&
+                defaults.ReshuffleThreshold == 15 && defaults.NaturalBeatsThreeCard21);
+            Check("Saknad fil ger en varning", missingLoader.Warnings.Count == 1);
+
+            File.WriteAllLines(path, ["DealerHitsSoft17=True", "NumberOfDecks=6", "ReshuffleThreshold=20", "NaturalBeatsThreeCard21=false"]);
+            RuleSetLoader validLoader = new RuleSetLoader(path);
+            RuleSet rules = validLoader.Load();
+            Check("Giltiga värden läses in",
+                rules.DealerHitsSoft17 && rules.NumberOfDecks == 6 &&
+                rules.ReshuffleThreshold == 20 && !rules.NaturalBeatsThreeCard21);
+            Check("Giltig fil ger inga varningar", validLoader.Warnings.Count == 0);
+
+            File.WriteAllLines(path, ["NumberOfDecks=abc", "ReshuffleThreshold=5", "Decks=2", "bara text"]);
+            RuleSetLoader invalidLoader = new RuleSetLoader(path);
+            RuleSet fallback = invalidLoader.Load();
+            Check("Ogiltigt antal lekar ger standardvärdet", fallback.NumberOfDecks == 1);
+            Check("Gräns under 15 ger standardvärdet", fallback.ReshuffleThreshold == 15);
+            Check("Fyra fel ger fyra varningar", invalidLoader.Warnings.Count == 4);
+
+            File.Delete(path);
+        });
+
+         // ---------- Datorstrategier ----------
+        Console.WriteLine("\nDatorstrategier");
+
+        Card DealerCard(Rank rank) => new Card(rank, Suit.Spades);
+
+        Player Computer(string name, IMoveChooser strategy)
+        {
+            // Många marker så att insatsen aldrig tar slut under simuleringen
+            Player player = new Player { Name = name, Type = PlayerType.Computer, Chips = 1_000_000 };
+            player.ReceiveMoveChooser(strategy);
+            return player;
+        }
+
+        Run("Gränsfall: spräckt hand", () =>
+        {
+            Hand bust = MakeHand(Rank.King, Rank.Queen, Rank.Five); // 25
+            Card six = DealerCard(Rank.Six);
+            Check("Enkel stannar på spräckt 25", new SimpleStrategy().ChooseMove(bust, six) == Move.Stand);
+            Check("Grundstrategi stannar på spräckt 25", new BasicStrategy().ChooseMove(bust, six) == Move.Stand);
+            Check("Försiktig stannar på spräckt 25", new CautiousStrategy().ChooseMove(bust, six) == Move.Stand);
+            Check("Djärv stannar på spräckt 25", new BoldStrategy().ChooseMove(bust, six) == Move.Stand);
+        });
+
+        Run("Gränsfall: naturlig tjugoett", () =>
+        {
+            Hand natural = MakeHand(Rank.Ace, Rank.King);
+            Card ace = DealerCard(Rank.Ace);
+            Check("Ess + Kung är naturlig tjugoett", natural.IsBlackjack());
+            Check("Enkel stannar på naturlig 21", new SimpleStrategy().ChooseMove(natural, ace) == Move.Stand);
+            Check("Grundstrategi stannar på naturlig 21", new BasicStrategy().ChooseMove(natural, ace) == Move.Stand);
+            Check("Djärv stannar på naturlig 21", new BoldStrategy().ChooseMove(natural, ace) == Move.Stand);
+        });
+
+        Run("Gränsfall: mjuk hand med flera ess", () =>
+        {
+            Hand aceAceSix = MakeHand(Rank.Ace, Rank.Ace, Rank.Six); // mjuk 18
+            Check("Ess + Ess + 6 är mjuk 18", aceAceSix.GetHandValue() == 18 && aceAceSix.IsSoft());
+            Check("Grundstrategi stannar på mjuk 18 mot 7", new BasicStrategy().ChooseMove(aceAceSix, DealerCard(Rank.Seven)) == Move.Stand);
+            Check("Grundstrategi köper på mjuk 18 mot 9", new BasicStrategy().ChooseMove(aceAceSix, DealerCard(Rank.Nine)) == Move.Hit);
+            Check("Enkel stannar på mjuk 18", new SimpleStrategy().ChooseMove(aceAceSix, DealerCard(Rank.Nine)) == Move.Stand);
+
+            Hand aceAce = MakeHand(Rank.Ace, Rank.Ace); // mjuk 12
+            Check("Ess + Ess är mjuk 12", aceAce.GetHandValue() == 12 && aceAce.IsSoft());
+            Check("Grundstrategi köper på mjuk 12", new BasicStrategy().ChooseMove(aceAce, DealerCard(Rank.Six)) == Move.Hit);
+        });
+
+        Run("Grundstrategi läser tabellen", () =>
+        {
+            BasicStrategy basic = new BasicStrategy();
+            Check("Hård 13 mot 6: stanna", basic.ChooseMove(MakeHand(Rank.King, Rank.Three), DealerCard(Rank.Six)) == Move.Stand);
+            Check("Hård 13 mot 7: köp", basic.ChooseMove(MakeHand(Rank.King, Rank.Three), DealerCard(Rank.Seven)) == Move.Hit);
+            Check("Hård 12 mot 3: köp", basic.ChooseMove(MakeHand(Rank.King, Rank.Two), DealerCard(Rank.Three)) == Move.Hit);
+            Check("Hård 12 mot 4: stanna", basic.ChooseMove(MakeHand(Rank.King, Rank.Two), DealerCard(Rank.Four)) == Move.Stand);
+            Check("Hård 16 mot ess: köp", basic.ChooseMove(MakeHand(Rank.King, Rank.Six), DealerCard(Rank.Ace)) == Move.Hit);
+        });
+
+        Run("Simulering 1000 rundor", () =>
+        {
+            const int Rounds = 1000;
+            RuleSet rules = new RuleSet();
+            // Fast frö (2026) ger samma resultat varje körning, så siffrorna i rapporten går att återskapa
+            ICardSource deck = new Deck(new Random(2026));
+            Dealer dealer = new Dealer(rules.DealerHitsSoft17);
+
+            List<Player> players = new List<Player>
+            {
+                Computer("Enkel (som givaren)", new SimpleStrategy()),
+                Computer("Grundstrategi", new BasicStrategy()),
+                Computer("Försiktig", new CautiousStrategy()),
+                Computer("Djärv", new BoldStrategy()),
+            };
+
+            for (int i = 0; i < Rounds; i++)
+            {
+                foreach (Player player in players)
+                {
+                    player.PlaceBet(10);
+                }
+
+                Round round = new Round(deck, dealer, players, rules);
+                round.Deal();
+
+                foreach (Player player in players)
+                {
+                    while (round.CanHit(player) && player.MakeMove() == Move.Hit)
+                    {
+                        round.Hit(player);
+                    }
+                }
+
+                round.PlayDealerTurn();
+
+                foreach (Player player in players)
+                {
+                    round.Settle(player);
+                }
+            }
+
+            foreach (Player player in players)
+            {
+                Console.WriteLine($"          {player.Name,-20} vinster {player.Wins,4}  förluster {player.Losses,4}  lika {player.Pushes,4}");
+                Check($"{player.Name}: alla {Rounds} rundor avgjordes", player.Wins + player.Losses + player.Pushes == Rounds);
+            }
         });
 
         // ---------- Summering ----------

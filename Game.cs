@@ -1,5 +1,3 @@
-using System.Threading.Channels;
-
 class Game
 {
     private const int MaxPlayers = 5;
@@ -17,7 +15,7 @@ class Game
         this.ui = ui;
         this.storage = storage;
         this.rules = rules;
-        
+
         // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
         if (rules.NumberOfDecks > 1)
         {
@@ -54,7 +52,7 @@ class Game
                     ui.ShowRules();
                     break;
                 case 3:
-                    ui.ShowResults(knownPlayers);
+                    ui.ShowResults(knownPlayers.OrderByDescending(p => p.Chips).ToList());
                     break;
                 case 4:
                     SaveResults();
@@ -72,17 +70,70 @@ class Game
 
         while (players.Count < count)
         {
+            int type = ui.AskPlayerType(players.Count + 1);
+
+            if (type == 1)
+            {
+                AddHumanPlayer();
+            }
+            else
+            {
+                AddComputerPlayer(type);
+            }
+        }
+    }
+
+    // Frågar efter namn tills det är ett namn som inte redan sitter vid bordet.
+    private void AddHumanPlayer()
+    {
+        while (true)
+        {
             string name = ui.AskPlayerName();
 
             if (players.Exists(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
-                ui.ShowMessage("Den spelaren ssitter redan vid bordet. Välj ett annat namn.");
+                ui.ShowMessage("Den spelaren sitter redan vid bordet. Välj ett annat namn.");
             }
             else
             {
                 AddPlayer(name);
+                return;
             }
         }
+    }
+
+    // Skapar en datorspelare och ger en strategi. 
+    // Datorspelare sparas inte till fil, läggs bara till vid bordet.
+    private void AddComputerPlayer(int type)
+    {
+        IMoveChooser strategy;
+        string strategyName;
+
+        switch (type)
+        {
+            case 2:
+                strategy = new SimpleStrategy();
+                strategyName = "enkel";
+                break;
+            case 3: 
+                strategy = new BasicStrategy();
+                strategyName = "grundstrategi";
+                break;
+            case 4:
+                strategy = new CautiousStrategy();
+                strategyName = "försiktig";
+                break;
+            default:
+                strategy = new BoldStrategy();
+                strategyName = "djärv";
+                break;
+        }
+
+
+        Player computer = new Player { Name = $"Dator {players.Count + 1} ({strategyName})" };
+        computer.Type = PlayerType.Computer;
+        computer.ReceiveMoveChooser(strategy);
+        players.Add(computer);
     }
 
     private void AddPlayer(string name)
@@ -149,6 +200,8 @@ class Game
         AskForBets();
         round.Deal();
 
+        ui.ShowPile(deck.Count());
+
         if (counter != null)
         {
             ui.ShowCount(counter.RunningCount, counter.TrueCount(deck.Count()));
@@ -164,20 +217,48 @@ class Game
 
         foreach (Player player in players)
         {
-           Outcome outcome = round.Settle(player);
-           ui.ShowOutcome(player, outcome);
+            Outcome outcome = round.Settle(player);
+            ui.ShowOutcome(player, outcome);
         }
 
         ObserveTable(round);
     }
 
+    // Datorer satsar alltid samma belopp.
+    private const int ComputerBetSize = 10;
+
     private void AskForBets()
     {
-                foreach(Player player in players)
+        foreach (Player player in players)
         {
-            int bet = ui.AskBet(player);
-            player.PlaceBet(bet);
+            int bet;
+
+            if (player.Type == PlayerType.Computer)
+            {
+                bet = GetComputerBet(player);
+                ui.ShowMessage($"{player.Name} satsar {bet}.");
+            }
+            else
+            {
+                bet = ui.AskBet(player);
+            }
+
+            // Ska inte kunna hända: ReadInt och Math.Min håller insatsen mellan 1 och spelarens marker.
+            // Händer det ändå har ett antagande ändrats, till exempel att spelare utan marker tas bort.
+            if (!player.PlaceBet(bet))
+            {
+                throw new InvalidOperationException(
+                    $"{player.Name} kunde inte satsa {bet} med {player.Chips} marker. " +
+                    "AskForBets förutsätter att insatsen är giltig. Kontrollera RemoveBrokePlayers och hur insatsen tas fram.");
+            }
         }
+    }
+
+    // Datorn satsar ett fast belopp, men aldrig mer än den har.
+    // Har den 6 marker kvar blir Math.Min(10, 6) = 6.
+    private int GetComputerBet(Player player)
+    {
+        return Math.Min(ComputerBetSize, player.Chips);
     }
 
     private void PlayPlayerTurn(Player player, Round round)
@@ -190,7 +271,14 @@ class Game
             round.Hit(player);
             ui.ShowHand(player);
         }
+
+        // Visa hur datorns tur slutade, eftersom ingen människa svarade.
+        if (player.Type == PlayerType.Computer && !player.Hand.IsBust())
+        {
+            ui.ShowMessage($"{player.Name} stannar på {player.Hand.GetHandValue()}.");
+        }
     }
+    
 
     // Visar räknaren alla kort på bordet när rundan är slut.
     // Då är även hålkortet vänt, så räknaren ser bara sådant som spelaren också har sett.
