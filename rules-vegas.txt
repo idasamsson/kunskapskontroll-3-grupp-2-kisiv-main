@@ -1,0 +1,4 @@
+DealerHitsSoft17=true
+NumberOfDecks=6
+ReshuffleThreshold=78
+NaturalBeatsThreeCard21=true
