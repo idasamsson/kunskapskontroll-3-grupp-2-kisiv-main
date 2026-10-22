@@ -20,7 +20,7 @@ Starta med `dotnet run` i projektmappen.
 
 - **Grund:** `Hand` (håller varje spelares kort, inklusive givarens; räknar ut värdet, mjuk hand, spräckt hand och naturlig 21), `IMoveChooser` (gränssnitt som används vid val av drag, tar in spelarens hand och givarens öppna kort), `HumanMoveChooser` (skickar frågan om drag till den mänskliga spelaren), `Player` (håller spelarens namn, statistik och marker; frågar sin beslutsfattare när det är dags att välja drag).
 
-- **Tillval 4, satsningar och marker:** `PayoutCalculator` (räknar ut utbetalningen utifrån utgången i spelet), `Player.PlaceBet` (drar insatsen från markerna, nekas om den är 0 eller överstiger spelarens marker), `Player.ReceivePayout` (ger spelaren utbetalningen efter rundan), `ConsoleUI.AskBet` (frågar den mänskliga spelaren hur mycket hen vill satsa), `Game.AskForBets` (frågar spelarna om deras insatser inför varje runda), `Game.RemoveBrokePlayers` (tar bort spelare utan marker innan nästa runda), `Round.Settle` (utökad från Kim; räknar ut utbetalningen med `PayoutCalculator` och ger den till spelaren), `GameStorage` (utökad från Kim; sparar och läser marker i `players.txt`).
+- **Tillval 4, satsningar och marker:** `PayoutCalculator` (räknar ut utbetalningen utifrån utgången i spelet, räknar även ut försäkringsutbetalning), `Player.PlaceBet` (drar insatsen från markerna, nekas om den är 0 eller överstiger spelarens marker), `Player.PlaceInsuranceBet` (drar försäkringsinsatsen från markerna, nekas om den är 0, överstiger spelarens marker eller om en försäkringsinsats redan dragits en gång i rundan), `Player.ReceivePayout` (ger spelaren utbetalningen efter rundan), `Player.ReceiveInsurancePayout` (ger spelaren försäkringsutbetalningen efter rundan), `ConsoleUI.AskBet` (frågar den mänskliga spelaren hur mycket hen vill satsa), `ConsoleUI.AskInsurance` (frågar den mänskliga spelaren om hen vill lägga en försäkring), `Game.AskForBets` (frågar spelarna om deras insatser inför varje runda), `Game.RemoveBrokePlayers` (tar bort spelare utan marker innan nästa runda), `Game.OfferInsurance` (frågar den mänskliga spelaren om hen vill lägga försäkring när givarens öppna kort är ett ess), `Round.Settle` (utökad från Kim; räknar ut utbetalningen med `PayoutCalculator` och ger den till spelaren, kollar om spelaren lagt försäkring och ger i så fall försäkringsutbetalningen till spelaren), `GameStorage` (utökad från Kim; sparar och läser marker i `players.txt`).
 
 ### Sandra
 *(fylls i av Sandra)*
@@ -39,10 +39,13 @@ Starta med `dotnet run` i projektmappen.
 - **Inte gjort:** Kortgrafik 7 (animation av kortbunten).
 
 ## Regler
+
 Spelet följer reglerna i uppgiften, med följande tillägg:
 
 - Spelarnamn får inte vara tomma, längre än 20 tecken eller innehålla semikolon (;), eftersom sparfilen använder semikolon som avgränsare.
 - Naturlig tjugoett betalar 3:2. Vinsten avrundas uppåt när insatsen är udda. En insats på 5 marker ger vinst 7,5, som blir 8.
+- Spelaren erbjuds försäkring om givarens öppna kort är ett ess. Försäkringen är halva insatsen och avrundas nedåt - är insatsen 5 marker blir försäkringen 2 marker. Om spelaren inte har råd kan hen inte försäkra. Datorspelare blir inte tillfrågade om försäkring.
+- Har givaren blackjack får man tillbaka tre gånger försäkringsinsatsen - har givaren *inte* blackjack förlorar man försäkringen. Med 2 marker som försäkring blir det 6 tillbaka, alltså 4 i vinst. Uppgörelsen sker efter att givaren spelat klart.
 - En sparad spelare med 0 marker tilldelas nya startmarker (200, `Player.StartingChips`) när hen sätter sig vid bordet.
 - Med `NumberOfDecks=1` används en vanlig lek. Med fler lekar används en sko med skiljekort.
 - Skiljekortet läggs när mellan 1 och en fjärdedel av skons kort är kvar. När det dras spelas rundan färdigt, och skon blandas om inför nästa runda. `ReshuffleThreshold` gäller även för skon, som en säkerhetsspärr.
@@ -68,7 +71,8 @@ Saknas filen används standardreglerna, och programmet säger till. En felstavad
 - En runda med många spelare kan i sällsynta fall använda fler kort än som finns kvar, med en lek eller när skiljekortet ligger nära slutet av skon. Då byggs en ny lek eller sko mitt i rundan istället för att spelet kraschar, och samma kort kan finnas två gånger på bordet. Gränsen på 15 kort minskar risken men tar inte bort den.
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
-- `Player.Chips` är ett publikt fält, så andra klasser kan ändra markerna direkt, till exempel `Game.AddPlayer` när en spelare får nya startmarker.
+- `Player.Chips`, `Player.Bet` och `Player.InsuranceBet` är publika, så andra klasser kan ändra markerna och insatserna direkt, till exempel `Game.AddPlayer` när en spelare får nya startmarker.
+- När givarens öppna kort är ett ess erbjuds den mänskliga spelaren en försäkring. Till skillnad från ett riktigt kasino kollas inte hålkortet direkt, utan rundan spelas färdigt i vanlig ordning. Försäkringen avgörs när givaren spelat klart.
 - Om det händer med skon nollställs korträknaren mitt i rundan.
 - Korträkningen uppdateras mellan rundorna, inte för varje kort som visas.
 - Bygget ger en varning: `XParticipants/Participant.cs(3,19): warning CS8618: Non-nullable field 'Name' must contain a non-null value when exiting constructor.` Fältet `Name` är inte nullable och sätts inte i konstruktorn. Varningen påverkar inte hur spelet körs.
