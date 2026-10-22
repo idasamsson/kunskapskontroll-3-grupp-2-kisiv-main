@@ -236,8 +236,8 @@ class Game
         Round round = new Round(deck, dealer, players, rules);
         AskForBets();
         round.Deal();
-
         ui.ShowPile(deck.Count());
+        OfferInsurance();
 
         if (counter != null)
         {
@@ -316,6 +316,27 @@ class Game
         }
     }
     
+
+    private void OfferInsurance()
+    {
+        if (dealer.Hand.Cards[0].Rank != Rank.Ace)
+        {
+            return;
+        }
+
+        ui.ShowHand(dealer);
+
+        foreach (Player player in players)
+        {
+            if (player.Type == PlayerType.Human && player.InsuranceAmount > 0 && player.InsuranceAmount <= player.Chips)
+            {
+                if (ui.AskInsurance(player))
+                {
+                    player.PlaceInsuranceBet();
+                }
+            }
+        }
+    }
 
     // Visar räknaren alla kort på bordet när rundan är slut.
     // Då är även hålkortet vänt, så räknaren ser bara sådant som spelaren också har sett.

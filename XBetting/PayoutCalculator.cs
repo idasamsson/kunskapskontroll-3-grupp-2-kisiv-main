@@ -6,7 +6,7 @@ static class PayoutCalculator
         {
             throw new ArgumentOutOfRangeException(nameof(bet), bet, "Insatsen får inte vara 0 eller negativt.");
         }
-        
+
         return outcome switch
         {
             Outcome.Lose => 0,
@@ -18,5 +18,16 @@ static class PayoutCalculator
             Outcome.Blackjack => bet + (bet * 3 + 1) / 2,
             _ => throw new ArgumentOutOfRangeException(nameof(outcome), outcome, "Utfallet är okänt. Lägg till en regel i PayoutCalculator."),
         };
+    }
+
+    public static int CalculateInsurancePayout(int insuranceBet, bool dealerHasBlackjack)
+    {
+        if (insuranceBet <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(insuranceBet), insuranceBet, "Försäkringsinsatsen får inte vara 0 eller negativt.");
+        }
+
+        // Försäkring betalar 2:1. Insatsen kommer tillbaka, därför insatsen + 2 * insatsen.
+        return dealerHasBlackjack ? insuranceBet * 3 : 0;
     }
 }

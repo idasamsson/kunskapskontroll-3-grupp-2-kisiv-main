@@ -135,7 +135,10 @@ class ConsoleUI
         return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
     }
 
-
+    public bool AskInsurance(Player player)
+    {
+        return ConsoleInput.ReadInt($"{player.Name}, vill du försäkra dig för {player.InsuranceAmount} marker? Tryck 1 för 'ja' och 2 för 'nej': ", 1, 2) == 1;
+    }
     public Move AskMove()
     {
         while (true)
@@ -262,7 +265,7 @@ class ConsoleUI
         Console.WriteLine($"{p.Name} {text}");
     }
 
-    // Visar Hi-Lo- räkningen och hur gynnsamt läget är för spelaren.
+    // Visar Hi-Lo räkningen och hur gynnsamt läget är för spelaren.
     public void ShowCount(int runningCount, double trueCount)
     {
         string indicator = trueCount switch
