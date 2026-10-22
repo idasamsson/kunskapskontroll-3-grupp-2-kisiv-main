@@ -17,7 +17,7 @@ class Game
         this.ui = ui;
         this.storage = storage;
         this.rules = rules;
-        
+
         // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
         if (rules.NumberOfDecks > 1)
         {
@@ -115,7 +115,7 @@ class Game
         {
             strategy = new SimpleStrategy();
             strategyName = "enkel";
-        }   
+        }
         else
         {
             strategy = new BasicStrategy();
@@ -192,6 +192,8 @@ class Game
         AskForBets();
         round.Deal();
 
+        ui.ShowPile(deck.Count());
+
         if (counter != null)
         {
             ui.ShowCount(counter.RunningCount, counter.TrueCount(deck.Count()));
@@ -207,14 +209,14 @@ class Game
 
         foreach (Player player in players)
         {
-           Outcome outcome = round.Settle(player);
-           ui.ShowOutcome(player, outcome);
+            Outcome outcome = round.Settle(player);
+            ui.ShowOutcome(player, outcome);
         }
 
         ObserveTable(round);
     }
 
-   // Datorer satsar alltid samma belopp.
+    // Datorer satsar alltid samma belopp.
     private const int ComputerBetSize = 10;
 
     private void AskForBets()
