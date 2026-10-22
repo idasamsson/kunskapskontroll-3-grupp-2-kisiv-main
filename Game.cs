@@ -109,16 +109,26 @@ class Game
         IMoveChooser strategy;
         string strategyName;
 
-        if (type == 2)
+        switch (type)
         {
-            strategy = new SimpleStrategy();
-            strategyName = "enkel";
+            case 2:
+                strategy = new SimpleStrategy();
+                strategyName = "enkel";
+                break;
+            case 3: 
+                strategy = new BasicStrategy();
+                strategyName = "grundstrategi";
+                break;
+            case 4:
+                strategy = new CautiousStrategy();
+                strategyName = "försiktig";
+                break;
+            default:
+                strategy = new BoldStrategy();
+                strategyName = "djärv";
+                break;
         }
-        else
-        {
-            strategy = new BasicStrategy();
-            strategyName = "grundstrategi";
-        }
+
 
         Player computer = new Player { Name = $"Dator {players.Count + 1} ({strategyName})" };
         computer.Type = PlayerType.Computer;
@@ -261,7 +271,14 @@ class Game
             round.Hit(player);
             ui.ShowHand(player);
         }
+
+        // Visa hur datorns tur slutade, eftersom ingen människa svarade.
+        if (player.Type == PlayerType.Computer && !player.Hand.IsBust())
+        {
+            ui.ShowMessage($"{player.Name} stannar på {player.Hand.GetHandValue()}.");
+        }
     }
+    
 
     // Visar räknaren alla kort på bordet när rundan är slut.
     // Då är även hålkortet vänt, så räknaren ser bara sådant som spelaren också har sett.

@@ -320,6 +320,111 @@ static class Tests
             File.Delete(path);
         });
 
+         // ---------- Datorstrategier ----------
+        Console.WriteLine("\nDatorstrategier");
+
+        Card DealerCard(Rank rank) => new Card(rank, Suit.Spades);
+
+        Player Computer(string name, IMoveChooser strategy)
+        {
+            // Många marker så att insatsen aldrig tar slut under simuleringen
+            Player player = new Player { Name = name, Type = PlayerType.Computer, Chips = 1_000_000 };
+            player.ReceiveMoveChooser(strategy);
+            return player;
+        }
+
+        Run("Gränsfall: spräckt hand", () =>
+        {
+            Hand bust = MakeHand(Rank.King, Rank.Queen, Rank.Five); // 25
+            Card six = DealerCard(Rank.Six);
+            Check("Enkel stannar på spräckt 25", new SimpleStrategy().ChooseMove(bust, six) == Move.Stand);
+            Check("Grundstrategi stannar på spräckt 25", new BasicStrategy().ChooseMove(bust, six) == Move.Stand);
+            Check("Försiktig stannar på spräckt 25", new CautiousStrategy().ChooseMove(bust, six) == Move.Stand);
+            Check("Djärv stannar på spräckt 25", new BoldStrategy().ChooseMove(bust, six) == Move.Stand);
+        });
+
+        Run("Gränsfall: naturlig tjugoett", () =>
+        {
+            Hand natural = MakeHand(Rank.Ace, Rank.King);
+            Card ace = DealerCard(Rank.Ace);
+            Check("Ess + Kung är naturlig tjugoett", natural.IsBlackjack());
+            Check("Enkel stannar på naturlig 21", new SimpleStrategy().ChooseMove(natural, ace) == Move.Stand);
+            Check("Grundstrategi stannar på naturlig 21", new BasicStrategy().ChooseMove(natural, ace) == Move.Stand);
+            Check("Djärv stannar på naturlig 21", new BoldStrategy().ChooseMove(natural, ace) == Move.Stand);
+        });
+
+        Run("Gränsfall: mjuk hand med flera ess", () =>
+        {
+            Hand aceAceSix = MakeHand(Rank.Ace, Rank.Ace, Rank.Six); // mjuk 18
+            Check("Ess + Ess + 6 är mjuk 18", aceAceSix.GetHandValue() == 18 && aceAceSix.IsSoft());
+            Check("Grundstrategi stannar på mjuk 18 mot 7", new BasicStrategy().ChooseMove(aceAceSix, DealerCard(Rank.Seven)) == Move.Stand);
+            Check("Grundstrategi köper på mjuk 18 mot 9", new BasicStrategy().ChooseMove(aceAceSix, DealerCard(Rank.Nine)) == Move.Hit);
+            Check("Enkel stannar på mjuk 18", new SimpleStrategy().ChooseMove(aceAceSix, DealerCard(Rank.Nine)) == Move.Stand);
+
+            Hand aceAce = MakeHand(Rank.Ace, Rank.Ace); // mjuk 12
+            Check("Ess + Ess är mjuk 12", aceAce.GetHandValue() == 12 && aceAce.IsSoft());
+            Check("Grundstrategi köper på mjuk 12", new BasicStrategy().ChooseMove(aceAce, DealerCard(Rank.Six)) == Move.Hit);
+        });
+
+        Run("Grundstrategi läser tabellen", () =>
+        {
+            BasicStrategy basic = new BasicStrategy();
+            Check("Hård 13 mot 6: stanna", basic.ChooseMove(MakeHand(Rank.King, Rank.Three), DealerCard(Rank.Six)) == Move.Stand);
+            Check("Hård 13 mot 7: köp", basic.ChooseMove(MakeHand(Rank.King, Rank.Three), DealerCard(Rank.Seven)) == Move.Hit);
+            Check("Hård 12 mot 3: köp", basic.ChooseMove(MakeHand(Rank.King, Rank.Two), DealerCard(Rank.Three)) == Move.Hit);
+            Check("Hård 12 mot 4: stanna", basic.ChooseMove(MakeHand(Rank.King, Rank.Two), DealerCard(Rank.Four)) == Move.Stand);
+            Check("Hård 16 mot ess: köp", basic.ChooseMove(MakeHand(Rank.King, Rank.Six), DealerCard(Rank.Ace)) == Move.Hit);
+        });
+
+        Run("Simulering 1000 rundor", () =>
+        {
+            const int Rounds = 1000;
+            RuleSet rules = new RuleSet();
+            // Fast frö (2026) ger samma resultat varje körning, så siffrorna i rapporten går att återskapa
+            ICardSource deck = new Deck(new Random(2026));
+            Dealer dealer = new Dealer(rules.DealerHitsSoft17);
+
+            List<Player> players = new List<Player>
+            {
+                Computer("Enkel (som givaren)", new SimpleStrategy()),
+                Computer("Grundstrategi", new BasicStrategy()),
+                Computer("Försiktig", new CautiousStrategy()),
+                Computer("Djärv", new BoldStrategy()),
+            };
+
+            for (int i = 0; i < Rounds; i++)
+            {
+                foreach (Player player in players)
+                {
+                    player.PlaceBet(10);
+                }
+
+                Round round = new Round(deck, dealer, players, rules);
+                round.Deal();
+
+                foreach (Player player in players)
+                {
+                    while (round.CanHit(player) && player.MakeMove() == Move.Hit)
+                    {
+                        round.Hit(player);
+                    }
+                }
+
+                round.PlayDealerTurn();
+
+                foreach (Player player in players)
+                {
+                    round.Settle(player);
+                }
+            }
+
+            foreach (Player player in players)
+            {
+                Console.WriteLine($"          {player.Name,-20} vinster {player.Wins,4}  förluster {player.Losses,4}  lika {player.Pushes,4}");
+                Check($"{player.Name}: alla {Rounds} rundor avgjordes", player.Wins + player.Losses + player.Pushes == Rounds);
+            }
+        });
+
         // ---------- Summering ----------
         Console.WriteLine($"\nResultat: {passed} OK, {failed} FEL, {notDone} EJ KLARA");
     }
