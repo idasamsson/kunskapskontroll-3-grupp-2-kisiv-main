@@ -49,7 +49,7 @@ class Game
                     GameLoop();
                     break;
                 case 2:
-                    ui.ShowRules();
+                    ui.ShowRules(rules.DealerHitsSoft17);
                     break;
                 case 3:
                     ui.ShowResults(knownPlayers.OrderByDescending(p => p.Chips).ToList());
@@ -115,7 +115,7 @@ class Game
                 strategy = new SimpleStrategy();
                 strategyName = "enkel";
                 break;
-            case 3: 
+            case 3:
                 strategy = new BasicStrategy();
                 strategyName = "grundstrategi";
                 break;
@@ -278,7 +278,7 @@ class Game
             ui.ShowMessage($"{player.Name} stannar på {player.Hand.GetHandValue()}.");
         }
     }
-    
+
 
     private void OfferInsurance()
     {

@@ -22,7 +22,7 @@ class ConsoleUI
     {
         Console.WriteLine(text);
     }
-    public void ShowRules()
+    public void ShowRules(bool dealerHitsSoft17 = false, bool naturalBeatsThreeCard21 = false)
     {
         Console.WriteLine();
         Console.WriteLine("--- Regler ---");
@@ -31,9 +31,14 @@ class ConsoleUI
         Console.WriteLine("Knekt, dam och kung är värda 10. Ess är värt 1 eller 11.");
         Console.WriteLine("Du kan köpa ett kort till eller stanna.");
         Console.WriteLine("Går du över 21 har du spräckt och förlorar direkt.");
-        Console.WriteLine("Givaren köper tills handen är 17 eller mer, även mjuk 17.");
+        Console.WriteLine(dealerHitsSoft17
+    ? "Givaren köper tills handen är 17 eller mer, men köper på mjuk 17."
+    : "Givaren köper tills handen är 17 eller mer, och stannar även på mjuk 17.");
         Console.WriteLine("Ess och ett tiokort på de två första korten är naturlig tjugoett.");
-        Console.WriteLine("Naturlig tjugoett slår 21 av tre kort eller fler.");
+        Console.WriteLine(naturalBeatsThreeCard21
+            ? "Naturlig tjugoett slår 21 av tre kort eller fler."
+            : "Naturlig tjugoett mot 21 av tre kort eller fler blir lika.");
+
         Console.WriteLine("Lika värde betyder lika, och rundan räknas varken som vinst eller förlust.");
         Console.WriteLine("---------------");
         Console.WriteLine();
@@ -114,7 +119,7 @@ class ConsoleUI
         // Ska inte kunna hända: spelare utan marker tas bort av RemoveBrokePlayers.
         if (player.Chips <= 0)
         {
-            throw new InvalidOperationException ($"{player.Name} har {player.Chips} marker och kan inte satsa. " +
+            throw new InvalidOperationException($"{player.Name} har {player.Chips} marker och kan inte satsa. " +
             "AskBet förutsätter att spelaren har minst 1 marker. Kontrollera RemoveBrokePlayers.");
         }
         return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
