@@ -1,4 +1,5 @@
 DealerHitsSoft17=true
 NumberOfDecks=6
-ReshuffleThreshold=78
+// realistiskt att skiljekortet avgör
+ReshuffleThreshold=15
 NaturalBeatsThreeCard21=true

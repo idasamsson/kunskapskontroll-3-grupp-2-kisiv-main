@@ -12,9 +12,11 @@ Starta med `dotnet run` i projektmappen.
 
 ### Kim
 
-- **Grund:** `Game` (meny, spelare och spelloop), `Round` (en giv: utdelning, köpregel, givarens tur och avgörande), `GameStorage` (sparar och läser `players.txt`) och `Outcome`.
+- **Grund:** `Game` (meny, 1–5 spelare där samma namn inte kan sitta vid bordet två gånger, sparade spelare återanvänds, spelloop som spelar runda efter runda och sparar efter varje runda), `Round` (utbruten ur `Game`; en giv: utdelning, köpregel, givarens tur och avgörande, utan någon in- eller utmatning), `GameStorage` (sparar och läser `players.txt`; en saknad fil ger en tom lista och trasiga rader hoppas över) och `Outcome`.
 
-- **Tillval 3, husregler från konfigurationsfil:** `RuleSet` och `RuleSetLoader` i `XRules/`.
+- **Tillval 3, husregler från konfigurationsfil:** `RuleSet` (håller de fyra reglerna, med grundreglerna som standardvärden), `RuleSetLoader` (läser `rules.txt` rad för rad; en saknad fil, en felstavad regel eller ett ogiltigt värde ger en varning och standardvärdet används, så programmet kraschar aldrig på grund av filen), `RuleTable` (ett bord: namn och regler). Varje fil som heter `rules-*.txt` blir ett eget bord som man väljer vid nytt spel (`Game.ChooseTable`, `ConsoleUI.AskTable`), och bordets husregler visas direkt. Sju tester för `RuleSetLoader` i `Test.cs`.
+
+- **Ändrat i gemensam kod för tillvalet:** `Dealer` (köper på mjuk 17 om regeln säger det), `Deck.ResetIfLow` (gränsen för omblandning skickas in i stället för det fasta talet 15), `Round` (regeln om naturlig 21 mot 21 av tre kort), `Game` (bygger lek eller sko och givare efter bordets regler i `ApplyRules`) och `Program.cs` (läser in borden när programmet startar).
 
 ### Ida
 
@@ -50,6 +52,17 @@ Reglerna kan ändras i `rules.txt` utan att programmet byggs om. Filen läses n�
 | `NaturalBeatsThreeCard21` | `true` | Vinner naturlig 21 över en 21 av tre kort? Om `false` blir det lika |
 
 Saknas filen används standardreglerna, och programmet säger till. En felstavad regel, en trasig rad eller ett ogiltigt värde (till exempel `NumberOfDecks=0`) ger en varning, och standardvärdet används för just den regeln. `ReshuffleThreshold` måste vara minst 15, så att korten inte tar slut mitt i en runda.
+
+#### Bord (regelpaket)
+Varje fil som heter `rules-*.txt` blir ett eget bord. Man väljer bord när man startar ett nytt spel, och reglerna för bordet visas direkt. Ett nytt bord är bara en ny textfil, utan ändringar i koden.
+
+| Bord | Fil | Regler |
+|---|---|---|
+| Standard | `rules.txt` | Grundreglerna |
+| Tuff | `rules-tuff.txt` | 8 lekar, givaren köper på mjuk 17, 21 mot 21 blir lika, ny sko redan under 60 kort |
+| Vegas | `rules-vegas.txt` | 6 lekar, givaren köper på mjuk 17 |
+
+Vid Vegas avgör skiljekortet när skon blandas om, som på ett riktigt kasino, och `ReshuffleThreshold` är bara ett skydd. Vid Tuff blandas skon om redan under 60 kort. Då spelas en mindre del av skon, och korträkning ger mindre fördel.
 
 ## Kända brister
 
