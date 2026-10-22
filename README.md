@@ -40,6 +40,10 @@ Spelet följer reglerna i uppgiften, med följande tillägg:
 - Spelarnamn får inte vara tomma, längre än 20 tecken eller innehålla semikolon (;), eftersom sparfilen använder semikolon som avgränsare.
 - Naturlig tjugoett betalar 3:2. Vinsten avrundas uppåt när insatsen är udda. En insats på 5 marker ger vinst 7,5, som blir 8.
 - En sparad spelare med 0 marker tilldelas nya startmarker (200, `Player.StartingChips`) när hen sätter sig vid bordet.
+- Med `NumberOfDecks=1` används en vanlig lek. Med fler lekar används en sko med skiljekort.
+- Skiljekortet läggs när mellan 1 och en fjärdedel av skons kort är kvar. När det dras spelas rundan färdigt, och skon blandas om inför nästa runda. `ReshuffleThreshold` gäller även för skon, som en säkerhetsspärr.
+- Korträknaren visas bara när skon används. Den räknar in korten när rundan är slut, då även hålkortet är vänt, och nollställs när skon blandas om.
+- Sann räkning är löpande räkning delad med antalet kvarvarande lekar. Indikatorn visar gynnsamt vid +2 eller mer och ogynnsamt vid −2 eller mindre.
 
 ### Husregler (`rules.txt`)
 
