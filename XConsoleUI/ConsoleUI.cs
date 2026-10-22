@@ -40,15 +40,31 @@ class ConsoleUI
         Console.WriteLine();
     }
 
-    public void ShowResults(List<Player> players)
+    // Visar spelarna sorterade efter marker. Som standard de fem främsta.
+    public void ShowResults(List<Player> players, int maxRows = 5)
     {
         Console.WriteLine();
-        Console.WriteLine("--- Resultat ---");
-        Console.WriteLine($"{"Spelare",-20} {"Vunna",6} {"Förlorade",10} {"Lika",6} {"Marker",10}");
+        Console.WriteLine($"--- Resultat (topp {maxRows} efter marker) ---");
 
-        foreach (Player p in players)
+        if (players.Count == 0)
         {
-            Console.WriteLine($"{p.Name,-20} {p.Wins,6} {p.Losses,10} {p.Pushes,6} {p.Chips,10}");
+            Console.WriteLine("Inga resultat än.");
+            return;
+        }
+
+        Console.WriteLine($"{"#",3} {"Spelare",-20} {"Marker",8} {"Vunna",6} {"Förlorade",10} {"Lika",6}");
+
+        var ranked = players
+            .OrderByDescending(p => p.Chips)
+            .ThenByDescending(p => p.Wins)
+            .ThenBy(p => p.Name)
+            .Take(maxRows)
+            .ToList();
+
+        for (int i = 0; i < ranked.Count; i++)
+        {
+            Player p = ranked[i];
+            Console.WriteLine($"{i + 1,3} {p.Name,-20} {p.Chips,8} {p.Wins,6} {p.Losses,10} {p.Pushes,6}");
         }
     }
 
@@ -82,7 +98,6 @@ class ConsoleUI
     }
 
     // Frågar vem som ska sitta på en plats vid bordet
-    // 1 = människa, 2 = dator med enkel strategi, 3 = dator med grundstrategi
     public int AskPlayerType(int seat)
     {
         Console.WriteLine();
@@ -90,7 +105,9 @@ class ConsoleUI
         Console.WriteLine("1. Människa");
         Console.WriteLine("2. Dator (enkel strategi)");
         Console.WriteLine("3. Dator (grundstrategi)");
-        return ConsoleInput.ReadInt("Välj (1-3): ", 1, 3);
+        Console.WriteLine("4. Dator (försiktig)");
+        Console.WriteLine("5. Dator (djärv)");
+        return ConsoleInput.ReadInt("Välj (1-5): ", 1, 5);
     }
 
     public int AskBet(Player player)
