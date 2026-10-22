@@ -287,6 +287,7 @@ class Game
             return;
         }
 
+        // Spelaren måste få se givarens kort när hen får frågan om försäkring.
         ui.ShowHand(dealer);
 
         foreach (Player player in players)
