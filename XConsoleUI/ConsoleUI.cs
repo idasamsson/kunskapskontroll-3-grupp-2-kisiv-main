@@ -35,7 +35,6 @@ class ConsoleUI
         Console.WriteLine("Ess och ett tiokort på de två första korten är naturlig tjugoett.");
         Console.WriteLine("Naturlig tjugoett slår 21 av tre kort eller fler.");
         Console.WriteLine("Lika värde betyder lika, och rundan räknas varken som vinst eller förlust.");
-        Console.WriteLine("Vinnaren får 1 poäng, och den som först når 5 poäng vinner spelet.");
         Console.WriteLine("---------------");
         Console.WriteLine();
     }
