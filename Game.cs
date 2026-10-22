@@ -1,5 +1,3 @@
-using System.Threading.Channels;
-
 class Game
 {
     private const int MaxPlayers = 5;
@@ -17,7 +15,7 @@ class Game
         this.ui = ui;
         this.storage = storage;
         this.rules = rules;
-        
+
         // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
         if (rules.NumberOfDecks > 1)
         {
@@ -202,6 +200,8 @@ class Game
         AskForBets();
         round.Deal();
 
+        ui.ShowPile(deck.Count());
+
         if (counter != null)
         {
             ui.ShowCount(counter.RunningCount, counter.TrueCount(deck.Count()));
@@ -217,14 +217,14 @@ class Game
 
         foreach (Player player in players)
         {
-           Outcome outcome = round.Settle(player);
-           ui.ShowOutcome(player, outcome);
+            Outcome outcome = round.Settle(player);
+            ui.ShowOutcome(player, outcome);
         }
 
         ObserveTable(round);
     }
 
-   // Datorer satsar alltid samma belopp.
+    // Datorer satsar alltid samma belopp.
     private const int ComputerBetSize = 10;
 
     private void AskForBets()
@@ -243,7 +243,14 @@ class Game
                 bet = ui.AskBet(player);
             }
 
-            player.PlaceBet(bet);
+            // Ska inte kunna hända: ReadInt och Math.Min håller insatsen mellan 1 och spelarens marker.
+            // Händer det ändå har ett antagande ändrats, till exempel att spelare utan marker tas bort.
+            if (!player.PlaceBet(bet))
+            {
+                throw new InvalidOperationException(
+                    $"{player.Name} kunde inte satsa {bet} med {player.Chips} marker. " +
+                    "AskForBets förutsätter att insatsen är giltig. Kontrollera RemoveBrokePlayers och hur insatsen tas fram.");
+            }
         }
     }
 
