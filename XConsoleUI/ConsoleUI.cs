@@ -13,6 +13,20 @@ class ConsoleUI
         return ConsoleInput.ReadInt("Välj ett alternativ (1-4): ", 1, 4);
     }
 
+    // Frågar vilket bord spelaren vill sitta vid. Varje bord är ett regelpaket.
+    public int AskTable(List<string> tableNames)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Välj bord:");
+
+        for (int i = 0; i < tableNames.Count; i++)
+        {
+            Console.WriteLine($"{i + 1}. {tableNames[i]}");
+        }
+
+        return ConsoleInput.ReadInt($"Välj (1-{tableNames.Count}): ", 1, tableNames.Count);
+    }
+
     public int AskPlayerCount(int max = 5)
     {
         return ConsoleInput.ReadInt($"Hur många spelare (1-{max})? ", 1, max);

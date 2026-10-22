@@ -8,13 +8,28 @@ class Game
     private List<Player> knownPlayers;
     private ConsoleUI ui;
     private GameStorage storage;
-    private readonly RuleSet rules;
+    private readonly Random random;
+    private readonly List<RuleTable> tables;
+    private RuleSet rules;
 
-    public Game(Random random, ConsoleUI ui, GameStorage storage, RuleSet rules)
+    public Game(Random random, ConsoleUI ui, GameStorage storage, List<RuleTable> tables)
     {
+        this.random = random;
         this.ui = ui;
         this.storage = storage;
-        this.rules = rules;
+        this.tables = tables;
+        players = new List<Player>();
+        knownPlayers = new List<Player>();
+
+        // Första bordet gäller tills spelaren väljer ett annat.
+        ApplyRules(tables[0].Rules);
+    }
+
+    // Bygger lek eller sko och givare utifrån bordets regler.
+    private void ApplyRules(RuleSet tableRules)
+    {
+        rules = tableRules;
+        counter = null;
 
         // En lek ger grundversionen med tröskel. Fler lekar ger en sko med skiljekort.
         if (rules.NumberOfDecks > 1)
@@ -29,8 +44,29 @@ class Game
             deck = new Deck(random);
         }
         dealer = new Dealer(rules.DealerHitsSoft17);
-        players = new List<Player>();
-        knownPlayers = new List<Player>();
+    }
+
+    // Låter spelaren välja bord om det finns fler än ett, och visar bordets husregler.
+    private void ChooseTable()
+    {
+        if (tables.Count > 1)
+        {
+            List<string> names = tables.Select(t => t.Name).ToList();
+            int choice = ui.AskTable(names);
+            ApplyRules(tables[choice - 1].Rules);
+        }
+
+        ShowHouseRules();
+    }
+
+    // Visar vilka husregler som gäller vid bordet.
+    private void ShowHouseRules()
+    {
+        string decks = rules.NumberOfDecks == 1 ? "1 lek" : $"{rules.NumberOfDecks} lekar";
+        string soft17 = rules.DealerHitsSoft17 ? "köper" : "stannar";
+        string natural = rules.NaturalBeatsThreeCard21 ? "naturlig 21 slår 21 av tre kort" : "21 mot 21 blir alltid lika";
+
+        ui.ShowMessage($"Husregler: {decks} · givaren {soft17} på mjuk 17 · ny lek under {rules.ReshuffleThreshold} kort · {natural}");
     }
 
     public void Run()
@@ -45,6 +81,7 @@ class Game
             switch (choice)
             {
                 case 1:
+                    ChooseTable();
                     NewGame();
                     GameLoop();
                     break;
