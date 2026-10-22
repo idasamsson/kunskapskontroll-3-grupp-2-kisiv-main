@@ -185,6 +185,19 @@ class ConsoleUI
         return red ? ConsoleColor.Red : ConsoleColor.Gray;
     }
 
+    public void ShowPile(int cardsLeft)
+    {
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.DarkCyan;
+
+        foreach (string line in cardRenderer.RenderPile(cardsLeft))
+        {
+            Console.WriteLine(line);
+        }
+
+        Console.ResetColor();
+        Console.WriteLine($"Kort kvar: {cardsLeft}");
+    }
 
     private static int GetWidth()
     {
