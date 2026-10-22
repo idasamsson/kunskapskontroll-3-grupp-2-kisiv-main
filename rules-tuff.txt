@@ -1,5 +1,4 @@
 DealerHitsSoft17=true
 NumberOfDecks=8
-// svårare att utföra korträkning
 ReshuffleThreshold=60
 NaturalBeatsThreeCard21=false
