@@ -1,4 +1,4 @@
-// Rank = valör
+// Rank = valör. Ändrar värdet för Knekt, drottning o kung från 10 till egna värden då c# inte klarar av att se skillnaden mellan korten om de har samma värde. 
 public enum Rank 
 {
     Two = 2,
@@ -10,8 +10,8 @@ public enum Rank
     Eight = 8,
     Nine = 9,
     Ten = 10,
-    Jack = 11, // Ändrar värdet för Knekt, drottning o kung från 10 till egna värden
-    Queen = 12, //då c# inte klarar av att se skillnaden mellan korten om de har samma värde. 
+    Jack = 11,
+    Queen = 12,
     King = 13,
     Ace = 14,
 }

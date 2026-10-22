@@ -1,14 +1,20 @@
 public class Card
 {
-    public Rank Rank {get;}  // Kortets valör (2–10, Knekt, Dam, Kung, Ess) kortet går inte att ändras utifrån.
-    public Suit Suit {get;} // Kortets färg (Hjärter, Ruter, Klöver, Spader) kortet går inte att ändras utifrån
+    // Kortets valör (2–10, Knekt, Dam, Kung, Ess) kortet går inte att ändras utifrån.
+    public Rank Rank {get;}
 
-    public Card(Rank rank, Suit suit) // Konstruktor: skapar ett nytt kort med angiven valör och färg.
+    // Kortets färg (Hjärter, Ruter, Klöver, Spader) kortet går inte att ändras utifrån
+    public Suit Suit {get;}
+
+    // Konstruktor: skapar ett nytt kort med angiven valör och färg.
+    public Card(Rank rank, Suit suit)
     {
         Rank = rank;
         Suit = suit;
     }
-    public int GetValue() // Returnerar kortets poängvärde enligt Blackjack-reglerna.
+
+    // Returnerar kortets poängvärde enligt Blackjack-reglerna.
+    public int GetValue()
     {
        return Rank switch 
        {
@@ -18,8 +24,10 @@ public class Card
        };
     }
 
-    public override string ToString() // Gör om kortet till läsbar svensk text, t.ex. "Spader Ess".
-                                    // Anropas automatiskt när kortet skrivs ut, t.ex. med Console.WriteLine(card).
+    // Gör om kortet till läsbar svensk text, t.ex. "Spader Ess". Anropas automatiskt när kortet skrivs ut, 
+    // t.ex. med Console.WriteLine(card).
+    public override string ToString()
+                                    
     {
         string suit = Suit switch // Översätt färgen till svenska.
         {
@@ -30,7 +38,8 @@ public class Card
         _   => "?" // Reserv om ett okänt värde skulle dyka upp
         };
 
-        string rank = Rank switch // Översätt valören till svenska.
+        // Översätt valören till svenska.
+        string rank = Rank switch
         {
             Rank.Jack => "Knekt",
             Rank.Queen => "Dam",
