@@ -85,7 +85,7 @@ class ConsoleUI
                 continue;
             }
 
-            // GameStorage sparar spelare som namn;vinster;förluster;lika
+            // GameStorage sparar spelare som namn;vinster;förluster;lika;marker
             if (name.Contains(';'))
             {
                 Console.WriteLine("Namnet får inte innehålla semikolon (;).");
