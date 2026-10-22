@@ -1,11 +1,12 @@
-using System.IO.Pipelines;
-
 class Hand
 {
     private List<Card> cards = new List<Card>();
     public IReadOnlyList<Card> Cards => cards;
 
-
+    private const int BlackjackValue = 21;
+    
+    // Ess räknas som 11, men kan räknas som 1. Skillnaden är 10.
+    private const int AceReduction = 10;
     public void AddCard(Card card)
     {
         cards.Add(card);
@@ -25,9 +26,9 @@ class Hand
                 total += card.GetValue();
 
             }
-            while (total > 21 && aceCount > 0)
+            while (total > BlackjackValue && aceCount > 0)
             {
-                total -= 10;
+                total -= AceReduction;
                 aceCount--;
             }
         return (total, aceCount);
@@ -47,12 +48,12 @@ class Hand
 
     public bool IsBlackjack()
     {
-        return GetHandValue() == 21 && cards.Count == 2;
+        return GetHandValue() == BlackjackValue && cards.Count == 2;
     }
 
     public bool IsBust()
     {
-        return GetHandValue() > 21;
+        return GetHandValue() > BlackjackValue;
     }
 
     public void Clear()
