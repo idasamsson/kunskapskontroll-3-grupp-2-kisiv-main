@@ -32,7 +32,11 @@ Starta med `dotnet run` i projektmappen.
 - **Tillval 5, sko med flera lekar och korträkning:** `Shoe` (flera kortlekar blandade till en hög; lägger ett skiljekort på slumpmässig plats i den bakre fjärdedelen och blandar om mellan rundorna när det har dragits; meddelar med eventet `Reshuffled` när skon blandats om), `ICardSource` (gränssnitt för det man drar kort ifrån, implementeras av `Deck` och `Shoe` så att `Round` och `Dealer` inte behöver veta vilken som används), `HiLoCounter` (räknar visade kort enligt Hi-Lo och räknar ut löpande och sann räkning; observerar bara och ändrar inget i spelet), `ConsoleUI.ShowCount` (visar löpande och sann räkning och om läget är gynnsamt, neutralt eller ogynnsamt), `Round` (utökad från Kim; tar emot `ICardSource`, och `CardsOnTable` lämnar ut alla kort på bordet när rundan är slut), `Game` (utökad från Kim; väljer lek eller sko utifrån `NumberOfDecks`, skapar korträknaren och visar den korten efter varje runda), `Dealer.PlayTurn` (utökad; tar emot `ICardSource`).
 
 ### Ibuzor
-*(fylls i av Ibuzor)*
+
+- **Grund:** `ConsoleUI` och `ConsoleInput` i `XConsoleUI/`, där all in- och utmatning ligger så att regelklasserna aldrig anropar `Console`. `ConsoleInput` läser och validerar heltal och text och ger begripliga felmeddelanden. `ConsoleUI` har startmenyn, frågorna om antal spelare, namn, köp/stanna och ny runda, spelets nio grundregler (`ShowRules`), visning av en hand med dolt hålkort (`ShowHand`), rundans utfall på svenska (`ShowOutcome`) och resultattabellen (`ShowResults`). Jag skrev också startkoden i `Program.cs` och namnreglerna i README.
+
+- **Tillval 1, kortgrafik i konsolen:** `CardRenderer` i `XConsoleUI/`. Varje kort ritas som en ram på 9 × 7 tecken med valören i två hörn och färgen i mitten. Klädda kort har schackglyferna ♞ ♛ ♚. Renderaren returnerar `string[]` så att `ConsoleUI` kan sätta ihop flera kort bredvid varandra och radbryta efter konsolens bredd. Hjärter och ruter färgas röda och klöver och spader grå i `ConsoleUI`, inte i renderaren. Givarens hålkort ritas med en baksida där KISIV-logotypen bildar ett X. Kortleken ritas som en hög (`RenderPile`, `ShowPile`) som visas i början av varje runda. Resultattabellen visar de fem spelarna med flest marker.
+- **Inte gjort:** Kortgrafik 7 (animation av kortbunten).
 
 ## Regler
 Spelet följer reglerna i uppgiften, med följande tillägg:
@@ -67,6 +71,7 @@ Saknas filen används standardreglerna, och programmet säger till. En felstavad
 - `Player.Chips` är ett publikt fält, så andra klasser kan ändra markerna direkt, till exempel `Game.AddPlayer` när en spelare får nya startmarker.
 - Om det händer med skon nollställs korträknaren mitt i rundan.
 - Korträkningen uppdateras mellan rundorna, inte för varje kort som visas.
+- Bygget ger en varning: `XParticipants/Participant.cs(3,19): warning CS8618: Non-nullable field 'Name' must contain a non-null value when exiting constructor.` Fältet `Name` är inte nullable och sätts inte i konstruktorn. Varningen påverkar inte hur spelet körs.
 
 ## Klassdiagram
 
