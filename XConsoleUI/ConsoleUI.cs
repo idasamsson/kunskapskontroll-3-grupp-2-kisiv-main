@@ -248,7 +248,7 @@ class ConsoleUI
         Console.WriteLine($"{p.Name} {text}");
     }
 
-    // Visar Hi-Lo- räkningen och hur gynnsamt läget är för spelaren.
+    // Visar Hi-Lo räkningen och hur gynnsamt läget är för spelaren.
     public void ShowCount(int runningCount, double trueCount)
     {
         string indicator = trueCount switch
