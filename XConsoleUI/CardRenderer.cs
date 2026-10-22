@@ -49,6 +49,28 @@ class CardRenderer
         return rows;
     }
 
+    public const int CardsPerLayer = 10; // så många kort motsvarar ett lager i bunten
+    public const int MaxPileLayers = 5;
+
+    // Ritar en bunt: översta kortets baksida, med ett lager nedanför för var tionde kort som är kvar.
+    public string[] RenderPile(int cardsLeft)
+    {
+        if (cardsLeft <= 0)
+        {
+            return new[] { "(tom)" };
+        }
+
+        int layers = Math.Min(MaxPileLayers, (cardsLeft + CardsPerLayer - 1) / CardsPerLayer);
+        var rows = new List<string>(RenderBack());
+
+        for (int i = 1; i < layers; i++)
+        {
+            rows.Add(new string(' ', i) + "└" + new string('─', InnerWidth) + "┘");
+        }
+
+        return rows.ToArray();
+    }
+
     public const int CardGap = 1; // mellanrum mellan korten
 
     // Ritar flera kort som egna block. ConsoleUI använder den här när den vill färga varje kort för sig.
