@@ -21,7 +21,10 @@ Starta med `dotnet run` i projektmappen.
 *(fylls i av Sandra)*
 
 ### Veronica
-*(fylls i av Veronica)*
+
+- **Grund:** `Card` (ett kort med valör och färg; räknar ut kortets värde och visar kortet som svensk text), `Rank` och `Suit` (valörer och färger), `Deck` (en lek med 52 kort som blandas med Fisher–Yates och den gemensamma `Random`; blandas om när färre än `ReshuffleThreshold` kort är kvar).
+
+- **Tillval 5, sko med flera lekar och korträkning:** `Shoe` (flera kortlekar blandade till en hög; lägger ett skiljekort på slumpmässig plats i den bakre fjärdedelen och blandar om mellan rundorna när det har dragits; meddelar med eventet `Reshuffled` när skon blandats om), `ICardSource` (gränssnitt för det man drar kort ifrån, implementeras av `Deck` och `Shoe` så att `Round` och `Dealer` inte behöver veta vilken som används), `HiLoCounter` (räknar visade kort enligt Hi-Lo och räknar ut löpande och sann räkning; observerar bara och ändrar inget i spelet), `ConsoleUI.ShowCount` (visar löpande och sann räkning och om läget är gynnsamt, neutralt eller ogynnsamt), `Round` (utökad från Kim; tar emot `ICardSource`, och `CardsOnTable` lämnar ut alla kort på bordet när rundan är slut), `Game` (utökad från Kim; väljer lek eller sko utifrån `NumberOfDecks`, skapar korträknaren och visar den korten efter varje runda), `Dealer.PlayTurn` (utökad; tar emot `ICardSource`).
 
 ### Ibuzor
 *(fylls i av Ibuzor)*
@@ -45,9 +48,11 @@ Saknas filen används standardreglerna, och programmet säger till. En felstavad
 
 ## Kända brister
 - Med en lek och `ReshuffleThreshold` på 52 eller mer blandas leken om varje runda.
+- En runda med många spelare kan i sällsynta fall använda fler kort än som finns kvar, med en lek eller när skiljekortet ligger nära slutet av skon. Då byggs en ny lek eller sko mitt i rundan istället för att spelet kraschar, och samma kort kan finnas två gånger på bordet. Gränsen på 15 kort minskar risken men tar inte bort den.
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
-Räknaren kan nollställas mitt i en runda i nödfall, och räkningen uppdateras bara mellan rundorna.
+- Om det händer med skon nollställs korträknaren mitt i rundan.
+- Korträkningen uppdateras mellan rundorna, inte för varje kort som visas.
 
 ## Klassdiagram
 
