@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 class Round
 {
     private const int InitialCardCount = 2;
@@ -17,7 +19,7 @@ class Round
 
     public void Deal()
     {
-        deck.ResetIfLow(rules.ReshuffleThreshold);
+        deck.ResetIfLow(Math.Max(rules.ReshuffleThreshold, (players.Count + 1) * 6));
         foreach (Player player in players)
         {
             player.Hand.Clear();
@@ -72,7 +74,7 @@ class Round
         {
             yield return card;
         }
-        
+
     }
     public Outcome Settle(Player player)
     {
