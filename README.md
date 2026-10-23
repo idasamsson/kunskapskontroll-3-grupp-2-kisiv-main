@@ -25,7 +25,10 @@ Starta med `dotnet run` i projektmappen.
 - **Tillval 4, satsningar och marker:** `PayoutCalculator` (räknar ut utbetalningen utifrån utgången i spelet), `Player.PlaceBet` (drar insatsen från markerna, nekas om den är 0 eller överstiger spelarens marker), `Player.ReceivePayout` (ger spelaren utbetalningen efter rundan), `ConsoleUI.AskBet` (frågar den mänskliga spelaren hur mycket hen vill satsa), `Game.AskForBets` (frågar spelarna om deras insatser inför varje runda), `Game.RemoveBrokePlayers` (tar bort spelare utan marker innan nästa runda), `Round.Settle` (utökad från Kim; räknar ut utbetalningen med `PayoutCalculator` och ger den till spelaren), `GameStorage` (utökad från Kim; sparar och läser marker i `players.txt`).
 
 ### Sandra
-*(fylls i av Sandra)*
+
+- **Grund:** `RevealHoleCard`och `IsHoleCardReveald` (hålkortet vänds när alla spelare är klara), `MakeMove`(givaren köper på 16 eller lägre och stannar på 17, även mjuk 17), `PlayTurn`(givaren spelar alltid färdigt och väljer aldrig själv), `StartNewRound`(tömmer handen och döljer hålkortet inför varje ny runda).
+
+- **Tillval 2, datorspelare med strategi:** `SimpleStrategy` (köper så länge handen är under 17), `BasicStrategy` (följer grundstrategin genom att slå upp draget i en tabell utifrån handens värde, om handen är mjuk eller hård, och givarens öppna kort),`CautiousStrategy` (stannar på 12 eller mer), `BoldStrategy` (köper tills handen är 19 eller mer), `AskPlayerType` (frågar för varje plats om det är en människa eller en dator), `AddHumanPlayer`och `AddComputerPlayer` (skapar spelaren och ger den rätt strategi via `ReceiveMoveChooser`), `PlayerType` (skiljer på människa och dator).
 
 ### Veronica
 
