@@ -4,6 +4,7 @@ class Shoe : ICardSource
     private List<Card> cards = new();
     private readonly Random random;
     private readonly int numberOfDecks;
+    
     // Antal kort kvar när skiljekortet kommer fram.
     private int cutCardPosition;
     public bool CutCardReached { get; private set; }

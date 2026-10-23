@@ -12,9 +12,11 @@ Starta med `dotnet run` i projektmappen.
 
 ### Kim
 
-- **Grund:** `Game` (meny, spelare och spelloop), `Round` (en giv: utdelning, köpregel, givarens tur och avgörande), `GameStorage` (sparar och läser `players.txt`) och `Outcome`.
+- **Grund:** `Game` (meny, 1–5 spelare där samma namn inte kan sitta vid bordet två gånger, sparade spelare återanvänds, spelloop som spelar runda efter runda och sparar efter varje runda), `Round` (utbruten ur `Game`; en giv: utdelning, köpregel, givarens tur och avgörande, utan någon in- eller utmatning), `GameStorage` (sparar och läser `players.txt`; en saknad fil ger en tom lista och trasiga rader hoppas över) och `Outcome`.
 
-- **Tillval 3, husregler från konfigurationsfil:** `RuleSet` och `RuleSetLoader` i `XRules/`.
+- **Tillval 3, husregler från konfigurationsfil:** `RuleSet` (håller de fyra reglerna, med grundreglerna som standardvärden), `RuleSetLoader` (läser `rules.txt` rad för rad; en saknad fil, en felstavad regel eller ett ogiltigt värde ger en varning och standardvärdet används, så programmet kraschar aldrig på grund av filen), `RuleTable` (ett bord: namn och regler). Varje fil som heter `rules-*.txt` blir ett eget bord som man väljer vid nytt spel (`Game.ChooseTable`, `ConsoleUI.AskTable`), och bordets husregler visas direkt. Sju tester för `RuleSetLoader` i `Test.cs`.
+
+- **Ändrat i gemensam kod för tillvalet:** `Dealer` (köper på mjuk 17 om regeln säger det), `Deck.ResetIfLow` (gränsen för omblandning skickas in i stället för det fasta talet 15), `Round` (regeln om naturlig 21 mot 21 av tre kort), `Game` (bygger lek eller sko och givare efter bordets regler i `ApplyRules`) och `Program.cs` (läser in borden när programmet startar).
 
 ### Ida
 
@@ -26,10 +28,15 @@ Starta med `dotnet run` i projektmappen.
 *(fylls i av Sandra)*
 
 ### Veronica
-*(fylls i av Veronica)*
+
+- **Grund:** `Card` (ett kort med valör och färg; räknar ut kortets värde och visar kortet som svensk text), `Rank` och `Suit` (valörer och färger), `Deck` (en lek med 52 kort som blandas med Fisher–Yates och den gemensamma `Random`; blandas om när färre än `ReshuffleThreshold` kort är kvar).
+
+- **Tillval 5, sko med flera lekar och korträkning:** `Shoe` (flera kortlekar blandade till en hög; lägger ett skiljekort på slumpmässig plats i den bakre fjärdedelen och blandar om mellan rundorna när det har dragits; meddelar med eventet `Reshuffled` när skon blandats om), `ICardSource` (gränssnitt för det man drar kort ifrån, implementeras av `Deck` och `Shoe` så att `Round` och `Dealer` inte behöver veta vilken som används), `HiLoCounter` (räknar visade kort enligt Hi-Lo och räknar ut löpande och sann räkning; observerar bara och ändrar inget i spelet), `ConsoleUI.ShowCount` (visar löpande och sann räkning och om läget är gynnsamt, neutralt eller ogynnsamt), `Round` (utökad från Kim; tar emot `ICardSource`, och `CardsOnTable` lämnar ut alla kort på bordet när rundan är slut), `Game` (utökad från Kim; väljer lek eller sko utifrån `NumberOfDecks`, skapar korträknaren och visar den korten efter varje runda), `Dealer.PlayTurn` (utökad; tar emot `ICardSource`).
 
 ### Ibuzor
+
 - **Grund:** `ConsoleUI` och `ConsoleInput` i `XConsoleUI/`, där all in- och utmatning ligger så att regelklasserna aldrig anropar `Console`. `ConsoleInput` läser och validerar heltal och text och ger begripliga felmeddelanden. `ConsoleUI` har startmenyn, frågorna om antal spelare, namn, köp/stanna och ny runda, spelets nio grundregler (`ShowRules`), visning av en hand med dolt hålkort (`ShowHand`), rundans utfall på svenska (`ShowOutcome`) och resultattabellen (`ShowResults`). Jag skrev också startkoden i `Program.cs` och namnreglerna i README.
+
 - **Tillval 1, kortgrafik i konsolen:** `CardRenderer` i `XConsoleUI/`. Varje kort ritas som en ram på 9 × 7 tecken med valören i två hörn och färgen i mitten. Klädda kort har schackglyferna ♞ ♛ ♚. Renderaren returnerar `string[]` så att `ConsoleUI` kan sätta ihop flera kort bredvid varandra och radbryta efter konsolens bredd. Hjärter och ruter färgas röda och klöver och spader grå i `ConsoleUI`, inte i renderaren. Givarens hålkort ritas med en baksida där KISIV-logotypen bildar ett X. Kortleken ritas som en hög (`RenderPile`, `ShowPile`) som visas i början av varje runda. Resultattabellen visar de fem spelarna med flest marker.
 - **Inte gjort:** Kortgrafik 7 (animation av kortbunten).
 
@@ -39,6 +46,10 @@ Spelet följer reglerna i uppgiften, med följande tillägg:
 - Spelarnamn får inte vara tomma, längre än 20 tecken eller innehålla semikolon (;), eftersom sparfilen använder semikolon som avgränsare.
 - Naturlig tjugoett betalar 3:2. Vinsten avrundas uppåt när insatsen är udda. En insats på 5 marker ger vinst 7,5, som blir 8.
 - En sparad spelare med 0 marker tilldelas nya startmarker (200, `Player.StartingChips`) när hen sätter sig vid bordet.
+- Med `NumberOfDecks=1` används en vanlig lek. Med fler lekar används en sko med skiljekort.
+- Skiljekortet läggs när mellan 1 och en fjärdedel av skons kort är kvar. När det dras spelas rundan färdigt, och skon blandas om inför nästa runda. `ReshuffleThreshold` gäller även för skon, som en säkerhetsspärr.
+- Korträknaren visas bara när skon används. Den räknar in korten när rundan är slut, då även hålkortet är vänt, och nollställs när skon blandas om.
+- Sann räkning är löpande räkning delad med antalet kvarvarande lekar. Indikatorn visar gynnsamt vid +2 eller mer och ogynnsamt vid −2 eller mindre.
 
 ### Husregler (`rules.txt`)
 
@@ -54,6 +65,17 @@ Reglerna kan ändras i `rules.txt` utan att programmet byggs om. Filen läses n�
 Saknas filen används standardreglerna, och programmet säger till. En felstavad regel, en trasig rad eller ett ogiltigt värde (till exempel `NumberOfDecks=0`) ger en varning, och standardvärdet används för just den regeln. `ReshuffleThreshold` måste vara minst 15, så att korten inte tar slut mitt i en runda.
 Spelet blandar också om före given om det finns färre än (antal spelare + 1) × 6 kort kvar, även om `ReshuffleThreshold` är lägre. Det gäller både en lek och en sko. Med 5 spelare blandas alltså om vid 36 kort, och i en sko bestämmer skiljekortet bara när det ligger på fler än 36 kort kvar.
 
+#### Bord (regelpaket)
+Varje fil som heter `rules-*.txt` blir ett eget bord. Man väljer bord när man startar ett nytt spel, och reglerna för bordet visas direkt. Ett nytt bord är bara en ny textfil, utan ändringar i koden.
+
+| Bord | Fil | Regler |
+|---|---|---|
+| Standard | `rules.txt` | Grundreglerna |
+| Tuff | `rules-tuff.txt` | 8 lekar, givaren köper på mjuk 17, 21 mot 21 blir lika, ny sko redan under 60 kort |
+| Vegas | `rules-vegas.txt` | 6 lekar, givaren köper på mjuk 17 |
+
+Vid Vegas avgör skiljekortet när skon blandas om, som på ett riktigt kasino, och `ReshuffleThreshold` är bara ett skydd. Vid Tuff blandas skon om redan under 60 kort. Då spelas en mindre del av skon, och korträkning ger mindre fördel.
+
 ## Kända brister
 
 - Spärren (antal spelare + 1) × 6 gör att en enda lek blandas om nästan varje runda med många spelare, och i en sko tar den över från skiljekortet när det ligger lågt. En runda som drar ovanligt många kort kan fortfarande ta slut på leken, men det är mycket ovanligare än förut.
@@ -62,6 +84,8 @@ Spelet blandar också om före given om det finns färre än (antal spelare + 1)
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
 - `Player.Chips` är ett publikt fält, så andra klasser kan ändra markerna direkt, till exempel `Game.AddPlayer` när en spelare får nya startmarker.
+- Om det händer med skon nollställs korträknaren mitt i rundan.
+- Korträkningen uppdateras mellan rundorna, inte för varje kort som visas.
 - Bygget ger en varning: `XParticipants/Participant.cs(3,19): warning CS8618: Non-nullable field 'Name' must contain a non-null value when exiting constructor.` Fältet `Name` är inte nullable och sätts inte i konstruktorn. Varningen påverkar inte hur spelet körs.
 
 ## Klassdiagram

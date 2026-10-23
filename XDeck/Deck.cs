@@ -1,9 +1,11 @@
-class Deck : ICardSource // En kortlek med 52 kort som kan blandas och dras ifrån.
+// En kortlek med 52 kort som kan blandas och dras ifrån.
+class Deck : ICardSource
 {
     private List<Card> cards = new();
     private readonly Random random;
 
-    public Deck(Random random) // Samma Random skickas in från Game, så att alla delar samma slumpgenerator
+    // Samma Random skickas in från Game, så att alla delar samma slumpgenerator
+    public Deck(Random random)
     {
         this.random = random;
         Reset();
@@ -26,8 +28,7 @@ class Deck : ICardSource // En kortlek med 52 kort som kan blandas och dras ifr�
         {
             Reset();
         }
-        Card card = cards[^1]; // Tar sista kortet, eftersom det går 
-                                // snabbt att ta bort från slutet av en List
+        Card card = cards[^1]; // Tar sista kortet, eftersom det går snabbt att ta bort från slutet av en List
         cards.RemoveAt(cards.Count - 1);
         return card;
     }
@@ -52,8 +53,8 @@ class Deck : ICardSource // En kortlek med 52 kort som kan blandas och dras ifr�
         return cards.Count;
     }
     
-    public void ResetIfLow(int threshold) // Ny blandad lek när färre än threshold kort är kvar.
-                            // Anropas från Round i början av varje giv.
+    // Ny blandad lek när färre än threshold kort är kvar. Anropas från Round i början av varje giv.
+    public void ResetIfLow(int threshold)
     {
         if (cards.Count < threshold)
         {
