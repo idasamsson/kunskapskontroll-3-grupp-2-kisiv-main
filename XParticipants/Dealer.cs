@@ -7,6 +7,10 @@ class Dealer : Participant
     // Hålkortet är givarens andra kort, ligger dolt tills alla spelare är klara.
     public bool IsHoleCardRevealed { get; private set; }
 
+    // Givarens öppna kort är det första kortet som delas ut till givaren.
+    // Finns först efter utdelningen.
+    public Card UpCard => Hand.Cards[0];
+
     public Dealer(bool hitsSoft17 = false)
     {
         Name = "Givaren";
@@ -18,7 +22,7 @@ class Dealer : Participant
         IsHoleCardRevealed = true;
     }
     // Köper på 16 eller lägre, stannar på 17 eller mer utom mjuk 17 om husregeln säger det.
-    // Givaren väljer aldirg, draget räknas ut från regeln.
+    // Givaren väljer aldrig, draget räknas ut från regeln.
     public override Move MakeMove()
     {
         int value = Hand.GetHandValue();
