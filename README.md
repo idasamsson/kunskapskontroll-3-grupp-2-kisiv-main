@@ -52,10 +52,12 @@ Reglerna kan ändras i `rules.txt` utan att programmet byggs om. Filen läses n�
 | `NaturalBeatsThreeCard21` | `true` | Vinner naturlig 21 över en 21 av tre kort? Om `false` blir det lika |
 
 Saknas filen används standardreglerna, och programmet säger till. En felstavad regel, en trasig rad eller ett ogiltigt värde (till exempel `NumberOfDecks=0`) ger en varning, och standardvärdet används för just den regeln. `ReshuffleThreshold` måste vara minst 15, så att korten inte tar slut mitt i en runda.
+Spelet blandar också om före given om det finns färre än (antal spelare + 1) × 6 kort kvar, även om `ReshuffleThreshold` är lägre. Det gäller både en lek och en sko. Med 5 spelare blandas alltså om vid 36 kort, och i en sko bestämmer skiljekortet bara när det ligger på fler än 36 kort kvar.
 
 ## Kända brister
 
-- Med en lek och `ReshuffleThreshold` på 52 eller mer blandas leken om varje runda.
+- Spärren (antal spelare + 1) × 6 gör att en enda lek blandas om nästan varje runda med många spelare, och i en sko tar den över från skiljekortet när det ligger lågt. En runda som drar ovanligt många kort kan fortfarande ta slut på leken, men det är mycket ovanligare än förut.
+
 - En runda med många spelare kan i sällsynta fall använda fler än 15 kort. Då byggs en ny lek mitt i rundan, och samma kort kan finnas två gånger på bordet.
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
