@@ -22,7 +22,7 @@ class ConsoleUI
     {
         Console.WriteLine(text);
     }
-    public void ShowRules(bool dealerHitsSoft17 = false, bool naturalBeatsThreeCard21 = false)
+    public void ShowRules(bool dealerHitsSoft17, bool naturalBeatsThreeCard21)
     {
         Console.WriteLine();
         Console.WriteLine("--- Regler ---");
@@ -32,8 +32,8 @@ class ConsoleUI
         Console.WriteLine("Du kan köpa ett kort till eller stanna.");
         Console.WriteLine("Går du över 21 har du spräckt och förlorar direkt.");
         Console.WriteLine(dealerHitsSoft17
-    ? "Givaren köper tills handen är 17 eller mer, men köper på mjuk 17."
-    : "Givaren köper tills handen är 17 eller mer, och stannar även på mjuk 17.");
+            ? "Givaren köper på 16 eller mindre och på mjuk 17, men stannar på hård 17 eller mer."
+            : "Givaren köper på 16 eller mindre och stannar på 17 eller mer, även mjuk 17.");
         Console.WriteLine("Ess och ett tiokort på de två första korten är naturlig tjugoett.");
         Console.WriteLine(naturalBeatsThreeCard21
             ? "Naturlig tjugoett slår 21 av tre kort eller fler."
