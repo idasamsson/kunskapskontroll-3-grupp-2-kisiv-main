@@ -1,12 +1,36 @@
 # KISIV Blackjack
 
 ## Vad programmet gör och hur man startar det
+
 Ett tjugoett i konsolen för en till fem spelare mot en givare. Spelarnas resultat sparas i `players.txt` och finns kvar nästa gång programmet startas.
 
 Starta med `dotnet run` i projektmappen.
 
 ## Klasser och hur de hänger ihop
-*(fylls i gemensamt)*
+
+Programmet är uppdelat så att **regelklasserna aldrig pratar med användaren**. All in- och utmatning sker i `ConsoleUI`. Det gör att presentationen, spelarnas beslut och husreglerna kan bytas ut utan att spelreglerna ändras.
+
+### Flödet
+
+`Program` läser in borden (`RuleSetLoader` → `RuleSet`) och startar `Game`. `Game` visar menyn, låter spelaren välja bord och spelare, och skapar en `Round` för varje giv. `Round` delar ut kort från leken eller skon, låter spelarna och givaren spela, och avgör utfallet. Efter rundan sparar `GameStorage` resultaten.
+
+### Översikt
+
+| Område | Klasser | Ansvar |
+|---|---|---|
+| Spelet | `Game`, `Round`, `GameStorage`, `Outcome`, `Move` | `Game` styr menyn och spelloopen. `Round` är en giv utan in- och utmatning. `GameStorage` sparar spelare, statistik och marker i `players.txt` |
+| Kort | `Card`, `Rank`, `Suit`, `Hand` | Ett kort har valör och färg. `Hand` räknar ut sitt värde och vet om den är mjuk, spräckt eller naturlig 21 |
+| Kortkällor | `ICardSource`, `Deck`, `Shoe`, `HiLoCounter` | `Deck` är en lek, och `Shoe` är flera lekar med skiljekort. Båda uppfyller `ICardSource`, så att `Round` inte behöver veta vilken som används. `HiLoCounter` räknar kort men ändrar ingenting i spelet |
+| Deltagare | `Participant`, `Player`, `Dealer`, `PlayerType` | `Player` och `Dealer` ärver `Participant` (namn och hand). `Dealer` följer en fast regel, och `Player` frågar sin beslutsfattare |
+| Beslut | `IMoveChooser`, `HumanMoveChooser`, `SimpleStrategy`, `BasicStrategy`, `CautiousStrategy`, `BoldStrategy` | Vem som väljer köpa eller stanna. Människor och datorer kan sitta vid samma bord och bytas ut utan att `Player` ändras |
+| Husregler | `RuleSet`, `RuleSetLoader`, `RuleTable` | Reglerna läses från `rules.txt` och `rules-*.txt`. Varje fil blir ett bord |
+| Insatser | `PayoutCalculator` | Räknar ut utbetalningen för varje utfall |
+| Konsolen | `ConsoleUI`, `ConsoleInput`, `CardRenderer` | All kontakt med användaren. `CardRenderer` ritar korten som rutor och returnerar raderna, så att `ConsoleUI` kan sätta dem bredvid varandra |
+
+### Två gränssnitt som gör programmet utbytbart
+
+- **`IMoveChooser`**: samma anrop, `ChooseMove`, men olika beteende för människa och olika datorstrategier.
+- **`ICardSource`**: `Round` och `Dealer` drar kort på samma sätt oavsett om det är en lek eller en sko.
 
 ## Vem som gjort vad
 
@@ -72,6 +96,7 @@ Saknas filen används standardreglerna, och programmet säger till. En felstavad
 Spelet blandar också om före given om det finns färre än (antal spelare + 1) × 6 kort kvar, även om `ReshuffleThreshold` är lägre. Det gäller både en lek och en sko. Med 5 spelare blandas alltså om vid 36 kort, och i en sko bestämmer skiljekortet bara när det ligger på fler än 36 kort kvar.
 
 #### Bord (regelpaket)
+
 Varje fil som heter `rules-*.txt` blir ett eget bord. Man väljer bord när man startar ett nytt spel, och reglerna för bordet visas direkt. Ett nytt bord är bara en ny textfil, utan ändringar i koden.
 
 | Bord | Fil | Regler |
@@ -87,90 +112,68 @@ Vid Vegas avgör skiljekortet när skon blandas om, som på ett riktigt kasino, 
 - Spärren (antal spelare + 1) × 6 gör att en enda lek blandas om nästan varje runda med många spelare, och i en sko tar den över från skiljekortet när det ligger lågt. En runda som drar ovanligt många kort kan fortfarande ta slut på leken, men det är mycket ovanligare än förut.
 
 - En runda med många spelare kan i sällsynta fall använda fler än 15 kort. Då byggs en ny lek mitt i rundan, och samma kort kan finnas två gånger på bordet.
+
 - Trasiga rader i `players.txt` hoppas över vid inläsning och försvinner när filen sparas igen.
+
 - `Round.Settle()` räknar upp statistiken varje gång den anropas. Anropas den två gånger för samma spelare räknas resultatet dubbelt.
+
 - `Player.Chips`, `Player.Bet` och `Player.InsuranceBet` är publika, så andra klasser kan ändra markerna och insatserna direkt, till exempel `Game.AddPlayer` när en spelare får nya startmarker.
+
 - När givarens öppna kort är ett ess erbjuds den mänskliga spelaren en försäkring. Till skillnad från ett riktigt kasino kollas inte hålkortet direkt, utan rundan spelas färdigt i vanlig ordning. Försäkringen avgörs när givaren spelat klart.
+
 - Om det händer med skon nollställs korträknaren mitt i rundan.
+
 - Korträkningen uppdateras mellan rundorna, inte för varje kort som visas.
-- Bygget ger en varning: `XParticipants/Participant.cs(3,19): warning CS8618: Non-nullable field 'Name' must contain a non-null value when exiting constructor.` Fältet `Name` är inte nullable och sätts inte i konstruktorn. Varningen påverkar inte hur spelet körs.
 
 ## Klassdiagram
+
+Diagrammet visar de viktigaste fälten och metoderna, inte alla privata hjälpmetoder. `Program.cs` har inga egna klasser. Där läses borden in med `RuleSetLoader`, och sedan skapas `Game`.
 
 ```mermaid
 classDiagram
     direction TB
 
+    %% ---------- Spelet ----------
     class Game {
-        -Deck deck
+        -ICardSource deck
+        -HiLoCounter counter
         -Dealer dealer
         -List~Player~ players
-        -ConsoleUI ui
-        -GameStorage storage
+        -List~Player~ knownPlayers
+        -List~RuleTable~ tables
+        -RuleSet rules
+        +Game(Random random, ConsoleUI ui, GameStorage storage, List~RuleTable~ tables)
         +Run() void
+        -ApplyRules(RuleSet tableRules) void
+        -ChooseTable() void
         -NewGame() void
-        -AddPlayer(string name) void
+        -AddHumanPlayer() void
+        -AddComputerPlayer(int type) void
         -GameLoop() void
         -PlayRound() void
-        -DetermineOutcome(Player p) Outcome
+        -AskForBets() void
+        -OfferInsurance() void
+        -RemoveBrokePlayers() void
     }
 
-    class ConsoleUI {
-        +ShowStartMenu() int
-        +ShowRules() void
-        +ShowResults(List~Player~ players) void
-        +AskPlayerName() string
-        +AskMove() Move
-        +ShowHand(Participant p) void
-        +ShowOutcome(Player p, Outcome o) void
+    class Round {
+        -ICardSource deck
+        -Dealer dealer
+        -List~Player~ players
+        -RuleSet rules
+        +Deal() void
+        +CanHit(Player player) bool
+        +Hit(Player player) void
+        +PlayDealerTurn() void
+        +CardsOnTable() IEnumerable~Card~
+        +Settle(Player player) Outcome
+        -DetermineOutcome(Player player) Outcome
     }
 
     class GameStorage {
         -string filePath
         +SavePlayers(List~Player~ players) void
         +LoadPlayers() List~Player~
-    }
-
-    class Participant {
-        <<abstract>>
-        +string Name
-        #Hand Hand
-        +MakeMove()* Move
-        +IsBust() bool
-    }
-
-    class Player {
-        +int Wins
-        +int Losses
-        +int Pushes
-        +MakeMove() Move
-    }
-
-    class Dealer {
-        +MakeMove() Move
-    }
-
-    class Hand {
-        -List~Card~ cards
-        +AddCard(Card c) void
-        +GetValue() int
-        +IsBlackjack() bool
-        +Clear() void
-    }
-
-    class Deck {
-        -List~Card~ cards
-        +Shuffle() void
-        +Draw() Card
-        +Reset() void
-        +Count() int
-    }
-
-    class Card {
-        +Rank Rank
-        +Suit Suit
-        +GetValue() int
-        +ToString() string
     }
 
     class Outcome {
@@ -181,10 +184,136 @@ classDiagram
         Blackjack
     }
 
+    %% ---------- Deltagare ----------
+    class Participant {
+        <<abstract>>
+        +string Name
+        +Hand Hand
+        +MakeMove() Move*
+    }
+
+    class Player {
+        +int Wins
+        +int Losses
+        +int Pushes
+        +int Chips
+        +int Bet
+        +int InsuranceBet
+        +int InsuranceAmount
+        +PlayerType Type
+        -IMoveChooser moveChooser
+        -Card dealerOpenCard
+        +PlaceBet(int bet) bool
+        +PlaceInsuranceBet() bool
+        +ReceivePayout(int payout) void
+        +ReceiveInsurancePayout(int payout) void
+        +ReceiveMoveChooser(IMoveChooser moveChooser) void
+        +ReceiveDealerCard(Card dealerOpenCard) void
+        +MakeMove() Move
+    }
+
+    class Dealer {
+        -bool hitsSoft17
+        +bool IsHoleCardRevealed
+        +Card UpCard
+        +RevealHoleCard() void
+        +MakeMove() Move
+        +PlayTurn(ICardSource deck) List~Card~
+        +StartNewRound() void
+    }
+
+    class Hand {
+        -List~Card~ cards
+        +IReadOnlyList~Card~ Cards
+        +AddCard(Card card) void
+        +GetHandValue() int
+        +IsSoft() bool
+        +IsBlackjack() bool
+        +IsBust() bool
+        +Clear() void
+    }
+
+    class PlayerType {
+        <<enumeration>>
+        Human
+        Computer
+    }
+
     class Move {
         <<enumeration>>
         Hit
         Stand
+    }
+
+    %% ---------- Val av drag (strategier) ----------
+    class IMoveChooser {
+        <<interface>>
+        +ChooseMove(Hand myHand, Card dealerCard) Move
+    }
+    class HumanMoveChooser {
+        -ConsoleUI ui
+        +ChooseMove(Hand myHand, Card dealerCard) Move
+    }
+    class SimpleStrategy {
+        +ChooseMove(Hand myHand, Card dealerCard) Move
+    }
+    class BasicStrategy {
+        -Dictionary~int, string~ HardTable
+        -Dictionary~int, string~ SoftTable
+        +ChooseMove(Hand myHand, Card dealerCard) Move
+    }
+    class CautiousStrategy {
+        +ChooseMove(Hand myHand, Card dealerCard) Move
+    }
+    class BoldStrategy {
+        +ChooseMove(Hand myHand, Card dealerCard) Move
+    }
+
+    %% ---------- Kort, lek och sko ----------
+    class ICardSource {
+        <<interface>>
+        +Draw() Card
+        +Count() int
+        +ResetIfLow(int threshold) void
+    }
+
+    class Deck {
+        -List~Card~ cards
+        -Random random
+        +Shuffle() void
+        +Draw() Card
+        +Reset() void
+        +Count() int
+        +ResetIfLow(int threshold) void
+    }
+
+    class Shoe {
+        -List~Card~ cards
+        -Random random
+        -int numberOfDecks
+        -int cutCardPosition
+        +bool CutCardReached
+        +event Action Reshuffled
+        +Reset() void
+        +Draw() Card
+        +Count() int
+        +ResetIfLow(int threshold) void
+        -Shuffle() void
+        -PlaceCutCard() void
+    }
+
+    class HiLoCounter {
+        +int RunningCount
+        +Observe(Card card) void
+        +TrueCount(int cardsRemaining) double
+        +Reset() void
+    }
+
+    class Card {
+        +Rank Rank
+        +Suit Suit
+        +GetValue() int
+        +ToString() string
     }
 
     class Rank {
@@ -204,27 +333,123 @@ classDiagram
         Spades
     }
 
-    %% Relationer
-    Game --> ConsoleUI : använder
-    Game --> GameStorage : sparar/laddar
-    Game *-- "1..*" Participant
-    Game *-- "1" Deck
-    Game ..> Outcome : «use»
+    %% ---------- Satsningar ----------
+    class PayoutCalculator {
+        <<static>>
+        +Calculate(Outcome outcome, int bet) int$
+        +CalculateInsurancePayout(int insuranceBet, bool dealerHasBlackjack) int$
+    }
+
+    %% ---------- Husregler ----------
+    class RuleSet {
+        +bool DealerHitsSoft17
+        +int NumberOfDecks
+        +int ReshuffleThreshold
+        +bool NaturalBeatsThreeCard21
+    }
+
+    class RuleSetLoader {
+        -string filePath
+        +List~string~ Warnings
+        +Load() RuleSet
+    }
+
+    class RuleTable {
+        <<record>>
+        +string Name
+        +RuleSet Rules
+    }
+
+    %% ---------- Konsol ----------
+    class ConsoleUI {
+        -CardRenderer cardRenderer
+        +ShowStartMenu() int
+        +AskTable(List~string~ tableNames) int
+        +AskPlayerCount(int max) int
+        +AskPlayerType(int seat) int
+        +AskPlayerName() string
+        +AskBet(Player player) int
+        +AskInsurance(Player player) bool
+        +AskMove() Move
+        +AskPlayAgain() bool
+        +ShowMessage(string text) void
+        +ShowRules(bool dealerHitsSoft17, bool naturalBeatsThreeCard21) void
+        +ShowHand(Participant p) void
+        +ShowPile(int cardsLeft) void
+        +ShowOutcome(Player p, Outcome o) void
+        +ShowResults(List~Player~ players, int maxRows) void
+        +ShowCount(int runningCount, double trueCount) void
+    }
+
+    class ConsoleInput {
+        <<static>>
+        +ReadLine(string prompt) string$
+        +ReadInt(string prompt, int min, int max) int$
+    }
+
+    class CardRenderer {
+        +Render(Card card) string[]
+        +RenderBack() string[]
+        +RenderPile(int cardsLeft) string[]
+        +RenderCards(IReadOnlyList~Card~ cards, bool hideSecondCard) List~string[]~
+        +RenderHand(IReadOnlyList~Card~ cards, bool hideSecondCard, int maxWidth) string[]
+    }
+
+    %% ---------- Relationer ----------
+    Game --> ConsoleUI : visar och frågar
+    Game --> GameStorage : sparar och läser
+    Game --> "1..*" RuleTable : bord att välja
+    Game --> RuleSet : gällande regler
+    Game *-- ICardSource : lek eller sko
+    Game *-- Dealer
+    Game o-- "1..5" Player : vid bordet
+    Game *-- "0..1" HiLoCounter : bara med sko
+    Game ..> Round : skapar en per runda
+    Game ..> IMoveChooser : ger varje spelare
+
+    Round --> ICardSource
+    Round --> Dealer
+    Round --> "1..5" Player
+    Round --> RuleSet
+    Round ..> PayoutCalculator : räknar utbetalning
+    Round ..> Outcome : avgör
 
     Participant <|-- Player
     Participant <|-- Dealer
     Participant *-- "1" Hand
+    Participant ..> Move
 
-    Player ..> Move : «use»
-    Dealer ..> Move : «use»
+    Player --> "1" IMoveChooser : frågar om drag
+    Player --> PlayerType
+    Dealer ..> ICardSource : drar kort
 
-    Hand o-- "0..*" Card
+    IMoveChooser <|.. HumanMoveChooser
+    IMoveChooser <|.. SimpleStrategy
+    IMoveChooser <|.. BasicStrategy
+    IMoveChooser <|.. CautiousStrategy
+    IMoveChooser <|.. BoldStrategy
+    HumanMoveChooser --> ConsoleUI : AskMove
+
+    ICardSource <|.. Deck
+    ICardSource <|.. Shoe
     Deck *-- "52" Card
+    Shoe *-- "52 × antal lekar" Card
+    Hand o-- "0..*" Card
     Card --> Rank
     Card --> Suit
+    HiLoCounter ..> Card : räknar
 
-    %% Kommentarer
-    note for Dealer "MakeMove(): köper på 16 eller lägre, stannar på 17"
-    note for Move "Hit = Köpa<br>Stand = Stanna"
-    note for Card "Rank = valör, Suit = färg"
+    GameStorage ..> Player : skapar
+    RuleSetLoader ..> RuleSet : skapar
+    RuleTable --> RuleSet
+
+    ConsoleUI *-- CardRenderer
+    ConsoleUI ..> ConsoleInput : läser inmatning
+
+    %% ---------- Kommentarer ----------
+    note for Shoe "Reshuffled kopplas till HiLoCounter.Reset i Game.ApplyRules"
+    note for Dealer "Köper på 16 eller lägre, stannar på 17.<br>Köper på mjuk 17 om husregeln säger det."
+    note for Move "Hit = köpa<br>Stand = stanna"
 ```
+
+![Klassdiagram](image.png)
