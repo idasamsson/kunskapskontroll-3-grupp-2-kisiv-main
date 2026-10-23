@@ -9,8 +9,9 @@ class ConsoleUI
         Console.WriteLine("1. Nytt spel");
         Console.WriteLine("2. Visa regler");
         Console.WriteLine("3. Visa resultat");
-        Console.WriteLine("4. Avsluta");
-        return ConsoleInput.ReadInt("Välj ett alternativ (1-4): ", 1, 4);
+        Console.WriteLine("4. Kör tester");
+        Console.WriteLine("5. Avsluta");
+        return ConsoleInput.ReadInt("Välj ett alternativ (1-5): ", 1, 5);
     }
 
     public int AskPlayerCount(int max = 5)

@@ -50,12 +50,14 @@ class Game
                     break;
                 case 2:
                     ui.ShowRules(rules.DealerHitsSoft17, rules.NaturalBeatsThreeCard21);
-
                     break;
                 case 3:
                     ui.ShowResults(knownPlayers.OrderByDescending(p => p.Chips).ToList());
                     break;
                 case 4:
+                    Tests.RunAll();
+                    break;
+                case 5:
                     SaveResults();
                     running = false;
                     break;
