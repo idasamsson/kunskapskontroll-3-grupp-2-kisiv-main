@@ -49,7 +49,8 @@ class Game
                     GameLoop();
                     break;
                 case 2:
-                    ui.ShowRules(rules.DealerHitsSoft17);
+                    ui.ShowRules(rules.DealerHitsSoft17, rules.NaturalBeatsThreeCard21);
+
                     break;
                 case 3:
                     ui.ShowResults(knownPlayers.OrderByDescending(p => p.Chips).ToList());
