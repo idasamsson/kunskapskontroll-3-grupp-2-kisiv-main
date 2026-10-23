@@ -9,8 +9,9 @@ class ConsoleUI
         Console.WriteLine("1. Nytt spel");
         Console.WriteLine("2. Visa regler");
         Console.WriteLine("3. Visa resultat");
-        Console.WriteLine("4. Avsluta");
-        return ConsoleInput.ReadInt("Välj ett alternativ (1-4): ", 1, 4);
+        Console.WriteLine("4. Kör tester");
+        Console.WriteLine("5. Avsluta");
+        return ConsoleInput.ReadInt("Välj ett alternativ (1-5): ", 1, 5);
     }
 
     // Frågar vilket bord spelaren vill sitta vid. Varje bord är ett regelpaket.
@@ -36,7 +37,7 @@ class ConsoleUI
     {
         Console.WriteLine(text);
     }
-    public void ShowRules()
+    public void ShowRules(bool dealerHitsSoft17, bool naturalBeatsThreeCard21)
     {
         Console.WriteLine();
         Console.WriteLine("--- Regler ---");
@@ -45,11 +46,15 @@ class ConsoleUI
         Console.WriteLine("Knekt, dam och kung är värda 10. Ess är värt 1 eller 11.");
         Console.WriteLine("Du kan köpa ett kort till eller stanna.");
         Console.WriteLine("Går du över 21 har du spräckt och förlorar direkt.");
-        Console.WriteLine("Givaren köper tills handen är 17 eller mer, även mjuk 17.");
+        Console.WriteLine(dealerHitsSoft17
+            ? "Givaren köper på 16 eller mindre och på mjuk 17, men stannar på hård 17 eller mer."
+            : "Givaren köper på 16 eller mindre och stannar på 17 eller mer, även mjuk 17.");
         Console.WriteLine("Ess och ett tiokort på de två första korten är naturlig tjugoett.");
-        Console.WriteLine("Naturlig tjugoett slår 21 av tre kort eller fler.");
+        Console.WriteLine(naturalBeatsThreeCard21
+            ? "Naturlig tjugoett slår 21 av tre kort eller fler."
+            : "Naturlig tjugoett mot 21 av tre kort eller fler blir lika.");
+
         Console.WriteLine("Lika värde betyder lika, och rundan räknas varken som vinst eller förlust.");
-        Console.WriteLine("Vinnaren får 1 poäng, och den som först når 5 poäng vinner spelet.");
         Console.WriteLine("---------------");
         Console.WriteLine();
     }
@@ -100,7 +105,7 @@ class ConsoleUI
                 continue;
             }
 
-            // GameStorage sparar spelare som namn;vinster;förluster;lika
+            // GameStorage sparar spelare som namn;vinster;förluster;lika;marker
             if (name.Contains(';'))
             {
                 Console.WriteLine("Namnet får inte innehålla semikolon (;).");
@@ -129,7 +134,7 @@ class ConsoleUI
         // Ska inte kunna hända: spelare utan marker tas bort av RemoveBrokePlayers.
         if (player.Chips <= 0)
         {
-            throw new InvalidOperationException ($"{player.Name} har {player.Chips} marker och kan inte satsa." +
+            throw new InvalidOperationException($"{player.Name} har {player.Chips} marker och kan inte satsa. " +
             "AskBet förutsätter att spelaren har minst 1 marker. Kontrollera RemoveBrokePlayers.");
         }
         return ConsoleInput.ReadInt($"{player.Name}, hur mycket vill du satsa (1 - {player.Chips}): ", 1, player.Chips);
