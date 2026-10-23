@@ -142,7 +142,21 @@ class ConsoleUI
 
     public bool AskInsurance(Player player)
     {
-        return ConsoleInput.ReadInt($"{player.Name}, vill du försäkra dig för {player.InsuranceAmount} marker? Tryck 1 för 'ja' och 2 för 'nej': ", 1, 2) == 1;
+        while (true)
+        {
+            string input = ConsoleInput.ReadLine($"{player.Name}, vill du försäkra dig för {player.InsuranceAmount} marker? (J/N) ").ToUpper();
+
+            if (input == "J")
+            {
+                return true;
+            }
+            if (input == "N")
+            {
+                return false;
+            }
+
+            Console.WriteLine("Ogiltigt val. Skriv 'J' för ja eller 'N' för nej.");
+        }
     }
     public Move AskMove()
     {
