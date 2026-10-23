@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 class Game
 {
     private const int MaxPlayers = 5;
@@ -26,6 +27,7 @@ class Game
     }
 
     // Bygger lek eller sko och givare utifrån bordets regler.
+    [MemberNotNull (nameof(deck), nameof(dealer), nameof(rules))]
     private void ApplyRules(RuleSet tableRules)
     {
         rules = tableRules;
