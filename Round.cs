@@ -1,9 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-
 class Round
 {
     private const int InitialCardCount = 2;
     private const int BlackjackValue = 21;
+    // Ungefär så många kort en hand brukar använda. Blanda om i tid så att leken
+    // inte tar slut mitt i rundan och samma kort hamnar på bordet två gånger.
+    private const int CardsPerHandEstimate = 6;
+
     private readonly ICardSource deck;
     private readonly Dealer dealer;
     private readonly List<Player> players;
@@ -19,7 +21,8 @@ class Round
 
     public void Deal()
     {
-        deck.ResetIfLow(Math.Max(rules.ReshuffleThreshold, (players.Count + 1) * 6));
+        int neededCards = (players.Count + 1) * CardsPerHandEstimate; // spelarna + givaren
+        deck.ResetIfLow(Math.Max(rules.ReshuffleThreshold, neededCards));
         foreach (Player player in players)
         {
             player.Hand.Clear();
